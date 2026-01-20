@@ -195,10 +195,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('rug', 0, 0)
           break
         case 'gym':
-          addFurn('treadmill', 2, 0, -Math.PI / 2)
-          addFurn('dumbbell', -2, 0)
-          addFurn('bench', 0, 0)
-          addFurn('tv', 3, 3.5, Math.PI)
+          addFurn('tv', 0, -4.8, 0) // Back Wall
+          addFurn('treadmill', 3.5, 0, -Math.PI / 2)
+          addFurn('bench', 0, 1) // Center
+          addFurn('dumbbell', -3.5, 0) // Left Side
           break
         case 'garage':
           addFurn('tool_chest', 3, 3, -Math.PI / 2)

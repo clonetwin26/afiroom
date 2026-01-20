@@ -140,7 +140,7 @@ export const UI = () => {
               <input
                 type="range"
                 min="2"
-                max="5"
+                  max="10"
                 value={size}
                 onChange={(e) => setSize(parseInt(e.target.value))}
               />

@@ -73,8 +73,7 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
         <group>
           <Cylinder args={[0.1, 0.2, 3]} position={[0, 1.5, 0]}>{metalMat}</Cylinder>
           <Cylinder args={[0.5, 1, 0.8]} position={[0, 3, 0]}><meshStandardMaterial color="white" emissive="yellow" emissiveIntensity={0.8} /></Cylinder>
-          {/* Working Light Source - No Shadow to save texture units */}
-          <pointLight position={[0, 2.5, 0]} intensity={1.5} distance={10} color="#ffffaa" />
+          {/* Performance Opt: Removed dynamic PointLight for large scale support */}
         </group >
       )
     case 'bookshelf':
