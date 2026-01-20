@@ -9,9 +9,9 @@ import * as THREE from 'three'
 
 const Model = ({ type, color }: { type: FurnitureItem['type'], color?: string }) => {
   const textures = useTexture({
-    wood: '/textures/furniture_wood_1768925398400.png',
-    fabric: '/textures/furniture_fabric_1768925469911.png',
-    metal: '/textures/metal_texture_1768925485596.png'
+    wood: 'textures/furniture_wood_1768925398400.png',
+    fabric: 'textures/furniture_fabric_1768925469911.png',
+    metal: 'textures/metal_texture_1768925485596.png'
   })
 
   // Materials

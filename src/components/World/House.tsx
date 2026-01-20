@@ -27,9 +27,9 @@ const WallWithDoor = ({ position, rotation, texture, color }: { position: [numbe
 const Room = ({ position, type, color }: { position: [number, number, number], type: string, color: string }) => {
   // Load room textures (using existing for now as placeholders for new types to avoid error until generated)
   const textures = useTexture({
-    wood: '/textures/floor_wood_1768925349740.png',
-    tile: '/textures/floor_tile_1768925365399.png',
-    wallpaper: '/textures/wall_wallpaper_1768925379995.png'
+    wood: 'textures/floor_wood_1768925349740.png',
+    tile: 'textures/floor_tile_1768925365399.png',
+    wallpaper: 'textures/wall_wallpaper_1768925379995.png'
   })
 
   textures.wood.wrapS = textures.wood.wrapT = THREE.RepeatWrapping

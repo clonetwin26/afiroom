@@ -6,7 +6,7 @@ import { useGameStore } from '../store/gameStore'
 import * as THREE from 'three'
 
 const Grass = () => {
-  const texture = useTexture('/textures/furniture_fabric_1768925469911.png')
+  const texture = useTexture('textures/furniture_fabric_1768925469911.png')
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
   texture.repeat.set(500, 500)
 
