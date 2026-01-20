@@ -17,6 +17,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isGyroEnabled: false, // Default OFF (Requires permission)
   timeOfDay: 'night', // Default Night
 
+  // Metrics
+  startTime: 0,
+  elapsedTime: 0,
+  furnitureSearched: 0,
+
   hiddenPieces: {},
   foundLocations: {},
   rooms: [],
@@ -223,9 +228,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Ensure at least 1 piece if possible, but max is requested
     const finalCount = Math.min(requestedPieces, searchableItems.length)
 
-    // If we have 0 searchable items (rare), we can't play properly.
-    // Force at least 1 piece to be spawned if 0? No, just handle 0.
-
     // Update store with ACTUAL total
     set({ totalPuzzlePieces: finalCount })
 
@@ -242,12 +244,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameState: 'playing',
       secretCode: code,
       puzzlePiecesFound: 0,
-      totalPuzzlePieces: finalCount, // Vital update
+      totalPuzzlePieces: finalCount, 
       hasKey: false,
       hiddenPieces: hiddenMap,
       foundLocations: {},
       rooms: newRooms,
-      furniture: newFurniture
+      furniture: newFurniture,
+      // Metrics Reset
+      startTime: Date.now(),
+      elapsedTime: 0,
+      furnitureSearched: 0
     })
   },
   searchLocation: (id: string) => set((state) => {
@@ -256,9 +262,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const hasPiece = state.hiddenPieces[id]
 
+    // Check if we just found the LAST piece?
+    // Actually timer stops at 'won' state which is set in UI when safe opens.
+    // But requirement says: "timer that tracks how long it takes to get all the puzzle pieces"
+    // AND "to victory screen".
+    // Usually "Time to Find Pieces" is one metric, "Total Time" is another?
+    // "how long it takes to get all the puzzle pieces to the lower right" -> maybe meant "displayed in lower right"?
+    // "and to the victory screen"
+    // Let's assume one timer: Total Game Time.
+
     return {
       foundLocations: { ...state.foundLocations, [id]: true },
-      puzzlePiecesFound: hasPiece ? state.puzzlePiecesFound + 1 : state.puzzlePiecesFound
+      puzzlePiecesFound: hasPiece ? state.puzzlePiecesFound + 1 : state.puzzlePiecesFound,
+      furnitureSearched: state.furnitureSearched + 1
     }
   })
 }))

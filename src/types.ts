@@ -38,6 +38,11 @@ export interface GameStore {
   rooms: RoomData[]
   furniture: FurnitureItem[]
 
+  // Metrics
+  startTime: number
+  elapsedTime: number
+  furnitureSearched: number
+
   // Actions
   setGameState: (state: GameState) => void
   resetGame: () => void

@@ -57,6 +57,50 @@ export const UI = () => {
     </button>
   )
 
+  // Timer
+  const [time, setTime] = useState(0)
+  const startTime = useGameStore(state => state.startTime)
+  const furnitureSearched = useGameStore(state => state.furnitureSearched)
+  const gridSize = useGameStore(state => state.gridSize)
+
+  useEffect(() => {
+    let interval: any
+    if (gameState === 'playing') {
+      // If just resumed/started, we might want to carry over elapsed time?
+      // Current store implementation resets startTime on reset.
+      // We can just use (Date.now() - startTime) / 1000
+      // But wait, what if we pause? The simplified version just counts real time from start.
+      interval = setInterval(() => {
+        setTime(Math.floor((Date.now() - startTime) / 1000))
+      }, 500)
+    }
+    return () => clearInterval(interval)
+  }, [gameState, startTime])
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return `${m}:${s.toString().padStart(2, '0')}`
+  }
+
+  const calculateGrade = () => {
+    // Grading Logic: Speed Based Only
+    // S: < 8s per piece
+    // A: < 15s per piece
+    // B: < 25s per piece
+    // C: < 40s per piece
+    // D: > 40s per piece
+    const spp = time / Math.max(1, totalPuzzlePieces)
+
+    if (spp < 8) return { grade: 'S', color: 'gold', text: 'Perfect!' }
+    if (spp < 15) return { grade: 'A', color: '#4CAF50', text: 'Amazing!' }
+    if (spp < 25) return { grade: 'B', color: '#2196F3', text: 'Great Job!' }
+    if (spp < 40) return { grade: 'C', color: '#FF9800', text: 'Good Effort!' }
+    return { grade: 'D', color: '#9E9E9E', text: 'Passable' }
+  }
+
+  const grade = calculateGrade()
+
   return (
     <>
       <MusicButton />
@@ -166,6 +210,15 @@ export const UI = () => {
             </button>
           </div>
 
+          {/* Timer (Bottom Right) */}
+          <div style={{
+            position: 'absolute', bottom: 20, right: 20,
+            color: 'white', fontFamily: 'Arial', fontSize: '24px', fontWeight: 'bold',
+            textShadow: '0 0 4px black', zIndex: 100
+          }}>
+            Time: {formatTime(time)}
+          </div>
+
 
 
           {/* Crosshair */}
@@ -250,11 +303,46 @@ export const UI = () => {
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(50,205,50,0.5)', color: 'white', backdropFilter: 'blur(2px)'
+          background: 'rgba(50,205,50,0.8)', color: 'white', backdropFilter: 'blur(5px)',
+          fontFamily: 'Arial', zIndex: 4000
         }}>
-          <h1>YOU WON!</h1>
-          <p>Happy Passover!</p>
-          <button onClick={() => setGameState('intro')} style={{ padding: '20px', marginTop: '20px' }}>Play Again</button>
+          <h1 style={{ fontSize: '48px', marginBottom: '10px' }}>YOU WON!</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Happy Passover!</p>
+
+          <div style={{
+            background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '15px',
+            minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '10px'
+          }}>
+            <h3 style={{ margin: 0, borderBottom: '1px solid white', paddingBottom: '10px' }}>Mission Report</h3>
+
+            {/* Grade Display */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px 0' }}>
+              <div style={{ fontSize: '100px', fontWeight: 'bold', color: grade.color, lineHeight: 1, textShadow: '0 0 10px black' }}>
+                {grade.grade}
+              </div>
+              <div style={{ fontSize: '24px', color: grade.color }}>{grade.text}</div>
+            </div>
+
+            <h3 style={{ margin: 0, borderBottom: '1px solid white', paddingBottom: '10px' }}>Stats</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Time:</span>
+              <strong>{formatTime(time)}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Grid Size:</span>
+              <strong>{gridSize}x{gridSize}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Puzzle Pieces:</span>
+              <strong>{totalPuzzlePieces}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Furniture Searched:</span>
+              <strong>{furnitureSearched}</strong>
+            </div>
+          </div>
+
+          <button onClick={() => setGameState('intro')} style={{ padding: '20px 40px', fontSize: '24px', marginTop: '30px', cursor: 'pointer' }}>Play Again</button>
         </div>
       )}
     </>
