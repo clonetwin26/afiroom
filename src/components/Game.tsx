@@ -1,19 +1,41 @@
+import { useMemo } from 'react'
 import { House } from './World/House'
 import { Player } from './Player/Player'
-import { Sky, useTexture } from '@react-three/drei'
+import { Sky } from '@react-three/drei'
 import { ConfettiRain } from './FX/Confetti'
 import { useGameStore } from '../store/gameStore'
 import * as THREE from 'three'
 
 const Grass = () => {
-  const texture = useTexture('textures/furniture_fabric_1768925469911.png')
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
-  texture.repeat.set(50, 50)
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 512
+    canvas.height = 512
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+      // Base
+      ctx.fillStyle = '#3a5f0b'
+      ctx.fillRect(0, 0, 512, 512)
+      // Noise blades
+      for (let i = 0; i < 100000; i++) {
+        const x = Math.random() * 512
+        const y = Math.random() * 512
+        const w = 1 + Math.random() * 2
+        const h = 2 + Math.random() * 5
+        ctx.fillStyle = Math.random() > 0.5 ? '#4a7c0f' : '#2e4c08'
+        ctx.fillRect(x, y, w, h)
+      }
+    }
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(100, 100)
+    return tex
+  }, [])
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
       <planeGeometry args={[1000, 1000]} />
-      <meshStandardMaterial map={texture} color="#4CAF50" roughness={1} />
+      <meshStandardMaterial map={texture} roughness={1} />
     </mesh>
   )
 }

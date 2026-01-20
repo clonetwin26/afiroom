@@ -115,7 +115,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const addFurn = (type: FurnitureItem['type'], lx: number, lz: number, rotY = 0) => {
         let variant: string | undefined = undefined
         if (type === 'painting') {
-          variant = Math.random() > 0.25 ? 'passover' : undefined
+          const rand = Math.random()
+          if (rand > 0.6) variant = 'passover'
+          else if (rand > 0.3) variant = 'western_wall'
+          else variant = undefined
         }
         newFurniture.push({
           id: `${room.id}_${type}_${Math.random().toString(36).substr(2, 4)}`,
@@ -128,11 +131,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       switch (room.type) {
         case 'living':
-          addFurn('couch', 0, -3) // Back wall
-          addFurn('tv', 0, 3.5, Math.PI) // Front wall
+          addFurn('couch', 2.5, -3) // Back wall
+          // Randomize couch color sometimes
+          if (Math.random() > 0.5) newFurniture[newFurniture.length - 1].color = '#8B4513' // Leather brown
+          else newFurniture[newFurniture.length - 1].color = '#556B2F' // Olive green
+
+          addFurn('tv', 2.5, 3.5, Math.PI) // Front wall
           addFurn('table', 0, 0)
           addFurn('lamp', -3.5, 3.5)
-          addFurn('plant', 3.5, 3.5)
+          addFurn('plant', 3.5, 2.0)
           if (Math.random() > 0.5) addFurn('bookshelf', -3.5, -2, Math.PI / 2)
           addFurn('rug', 0, 0)
           addFurn('painting', 2.5, -4.8) // Offset from center
@@ -145,15 +152,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('chair', 1, 0, -Math.PI / 2)
           addFurn('chair', 0, -1, 0)
           addFurn('chair', 0, 1, Math.PI)
-          addFurn('cabinet', 0, 3.5, Math.PI)
+          addFurn('cabinet', -3, 3.5, Math.PI)
           addFurn('safe', 3.5, 3.5, Math.PI) // The Safe
           addFurn('painting', -4.8, 2, Math.PI / 2)
           break
         case 'bedroom':
         case 'guest_room':
-          addFurn('bed', 0, -2.5) // Moved back
-          addFurn('lamp', 3, -3) // Corner
-          addFurn('cabinet', -3.5, 0, Math.PI / 2) // Side wall
+          addFurn('bed', 2.5, -2.5) // Moved to side
+          addFurn('lamp', -3.5, -3.5) // Opposite corner
+          addFurn('cabinet', -3.5, 3, Math.PI / 2) // Side wall
           addFurn('plant', 3.5, 2)
           addFurn('rug', 0, 0)
           addFurn('painting', 2.5, -4.8) // Above bed, offset
@@ -165,14 +172,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('washer', -3.5, -3.5, Math.PI / 2)
           break
         case 'bathroom':
-          addFurn('toilet', 0, 3.5, Math.PI) // Back wall
-          addFurn('cabinet', 3.5, 0, -Math.PI / 2) // Side wall
+          addFurn('toilet', 2, 3.5, Math.PI) // Back wall
+          addFurn('cabinet', 3.5, -3, -Math.PI / 2) // Side wall
           addFurn('plant', -3.5, 3.5) // Corner
           break
         case 'office':
           addFurn('desk', 0, 2, Math.PI)
           addFurn('chair', 0, 0, Math.PI)
-          addFurn('bookshelf', -3, 0, Math.PI / 2)
+          addFurn('bookshelf', -3, -3, Math.PI / 2)
           addFurn('lamp', 3, 3)
           addFurn('monitor', 0, 2, Math.PI)
           addFurn('rug', 0, 0)
@@ -191,10 +198,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('treadmill', 2, 0, -Math.PI / 2)
           addFurn('dumbbell', -2, 0)
           addFurn('bench', 0, 0)
-          addFurn('tv', 0, 3.5, Math.PI)
+          addFurn('tv', 3, 3.5, Math.PI)
           break
         case 'garage':
-          addFurn('tool_chest', 3, 0, -Math.PI / 2)
+          addFurn('tool_chest', 3, 3, -Math.PI / 2)
           addFurn('cabinet', -3, 3)
           addFurn('washer', -3, -3)
           addFurn('dryer', -1.5, -3)
@@ -202,11 +209,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
         case 'pantry':
           addFurn('cabinet', -3, -2, Math.PI / 2)
           addFurn('cabinet', 3, -2, -Math.PI / 2)
-          addFurn('fridge', 0, 3, Math.PI)
+          addFurn('fridge', 2.5, 3, Math.PI)
           break
         case 'hall':
           if (Math.random() > 0.7) addFurn('plant', 0, 0)
-          if (Math.random() > 0.7) addFurn('bench', 3, 0, -Math.PI / 2)
+          if (Math.random() > 0.7) addFurn('bench', 3, 2.5, -Math.PI / 2)
           addFurn('painting', -4.8, 2.5, Math.PI / 2) // Art in hall
           break
         case 'tech_lab':

@@ -32,6 +32,7 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
         </group>
       )
     case 'couch':
+      // Basic fabric variation
       return (
         <group>
           <Box args={[3, 0.5, 1]} position={[0, 0.5, 0]}>{fabricMat}</Box>
@@ -192,8 +193,17 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
         </Box>
       )
     case 'painting':
-      const paintingTex = variant === 'passover' ? textures.paintingPassover : textures.painting
-      const frameColor = variant === 'passover' ? '#FFD700' : '#D4AF37'
+      let paintingTex = textures.painting
+      let frameColor = '#D4AF37' // Gold
+
+      if (variant === 'passover') {
+        paintingTex = textures.paintingPassover
+        frameColor = '#FFD700' // Gold
+      } else if (variant === 'western_wall') {
+        paintingTex = textures.paintingPassover
+        frameColor = '#C0C0C0' // Silver
+      }
+
       return (
         <group position={[0, 2, 0]}> {/* Higher up on wall */}
           {/* Frame */}

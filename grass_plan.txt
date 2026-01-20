@@ -1,0 +1,32 @@
+import fs from 'fs';
+import { createCanvas } from 'canvas';
+
+// Need 'canvas' package? If not available, I might need to write raw PPM or similar if I can't install packages.
+// Actually, simple noise for a grass texture can be done by writing a simple PPM file or using a purely algorithmic approach if I can't easily use canvas.
+// Creating a PPM file (P3) is very easy in text.
+// Then I can use 'sips' or similar to convert to PNG if needed, or just browser might read it? No, browser needs PNG/JPG.
+// Browser usually supports Canvas in runtime. I could generate it at RUNTIME in the React app!
+// That's much better. "Procedural Texture" at runtime.
+
+const width = 512;
+const height = 512;
+const buffer = new Uint8Array(width * height * 4);
+
+for (let i = 0; i < width * height; i++) {
+  const noise = Math.random();
+  // Green base: approx R=30, G=100-150, B=30
+  const r = 30 + Math.floor(noise * 30);
+  const g = 100 + Math.floor(noise * 100);
+  const b = 30 + Math.floor(noise * 30);
+  
+  buffer[i * 4] = r;
+  buffer[i * 4 + 1] = g;
+  buffer[i * 4 + 2] = b;
+  buffer[i * 4 + 3] = 255; // Alpha
+}
+
+// Wait, I can't easily save this as PNG without a library.
+// But I CAN use the `generate_image` tool with a simpler prompt that might pass? 
+// No, the quota is strictly time based.
+// I will create a Runtime Texture in Game.tsx using a Canvas element!
+// This satisfies "New Texture" (it's new, procedural) and bypasses the file limitation.
