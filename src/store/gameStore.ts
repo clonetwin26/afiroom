@@ -1,0 +1,243 @@
+import { create } from 'zustand'
+import type { GameStore, RoomData, FurnitureItem } from '../types'
+
+export const useGameStore = create<GameStore>((set, get) => ({
+  gameState: 'intro',
+  joystickInput: { x: 0, y: 0 },
+  lookInput: { x: 0, y: 0 },
+  secretCode: '1234',
+  puzzlePiecesFound: 0,
+  totalPuzzlePieces: 5,
+  hasKey: false,
+  gridSize: 5,
+  isMusicEnabled: true, // Default ON
+  timeOfDay: 'night', // Default Night
+
+  hiddenPieces: {},
+  foundLocations: {},
+  rooms: [],
+  furniture: [],
+
+  setGameState: (state) => set({ gameState: state }),
+  setGridSize: (size) => set({ gridSize: size }),
+  setJoystickInput: (input) => set({ joystickInput: input }),
+  setLookInput: (input) => set({ lookInput: input }),
+  toggleMusic: () => set(state => ({ isMusicEnabled: !state.isMusicEnabled })),
+  setTotalPieces: (count) => set({ totalPuzzlePieces: count }),
+  registerLocation: () => { },
+  resetGame: () => {
+    const { gridSize } = get()
+    // 1. Generate Rooms on a Grid
+    const newRooms: RoomData[] = []
+    const newFurniture: FurnitureItem[] = []
+
+    // Expanded Grid: 4x4 or 5x5
+    const spacing = 10
+    const roomTypes = ['living', 'dining', 'bedroom', 'kitchen', 'bathroom', 'office', 'gym', 'library', 'guest_room', 'pantry', 'garage', 'art_studio', 'music_room', 'tech_lab']
+    const colors: Record<string, string> = {
+      living: '#f0e68c',
+      dining: '#cd853f',
+      bedroom: '#e9967a',
+      kitchen: '#add8e6',
+      bathroom: '#ffffff',
+      hall: '#d3d3d3',
+      office: '#deb887',
+      gym: '#b0c4de',
+      library: '#8b4513',
+      guest_room: '#ffa07a',
+      pantry: '#fffacd',
+      garage: '#696969',
+      art_studio: '#dda0dd',
+      music_room: '#20b2aa',
+      tech_lab: '#708090'
+    }
+
+    let hasDining = false
+    const center = Math.floor(gridSize / 2)
+
+    for (let x = 0; x < gridSize; x++) {
+      for (let z = 0; z < gridSize; z++) {
+        let type: any = 'hall'
+
+        const rand = Math.random()
+        if (rand < 0.2) type = 'bedroom'
+        else if (rand < 0.3) type = 'bathroom'
+        else if (rand < 0.35) type = 'office'
+        else if (rand < 0.4) type = 'library'
+        else if (rand < 0.45) type = 'tech_lab'
+        else if (rand < 0.5) type = 'art_studio'
+        else type = roomTypes[Math.floor(Math.random() * (roomTypes.length))]
+
+        // Center room
+        if (x === center && z === center) type = 'living'
+
+        // Dining logic
+        if (!hasDining && type !== 'hall' && type !== 'living' && type !== 'bathroom') {
+          if (Math.random() > 0.8 || (x === gridSize - 1 && z === gridSize - 1)) {
+            type = 'dining'
+            hasDining = true
+          }
+        }
+
+        newRooms.push({
+          id: `room_${x}_${z}`,
+          position: [(x - center) * spacing, 0, (z - center) * spacing],
+          type: type,
+          color: colors[type] || '#ccc'
+        })
+      }
+    }
+
+    // Fallback guarantees
+    if (!hasDining) newRooms.find(r => r.type !== 'living')!.type = 'dining'
+
+    // 2. Generate Furniture per Room
+    newRooms.forEach(room => {
+      const [rx, ry, rz] = room.position
+
+      const addFurn = (type: FurnitureItem['type'], lx: number, lz: number, rotY = 0) => {
+        newFurniture.push({
+          id: `${room.id}_${type}_${Math.random().toString(36).substr(2, 4)}`,
+          type,
+          position: [rx + lx, ry, rz + lz],
+          rotation: [0, rotY, 0]
+        })
+      }
+
+      switch (room.type) {
+        case 'living':
+          addFurn('couch', 0, -2)
+          addFurn('tv', 0, 3, Math.PI)
+          addFurn('table', 0, 0)
+          addFurn('lamp', -3.5, 3.5)
+          addFurn('plant', 3.5, 3.5)
+          if (Math.random() > 0.5) addFurn('bookshelf', -3.5, -2, Math.PI / 2)
+          break
+        case 'dining':
+          addFurn('table', 0, 0)
+          addFurn('chair', -1, 0, Math.PI / 2)
+          addFurn('chair', 1, 0, -Math.PI / 2)
+          addFurn('chair', 0, -1, 0)
+          addFurn('chair', 0, 1, Math.PI)
+          addFurn('cabinet', 0, 3.5, Math.PI)
+          addFurn('safe', 3, 3, Math.PI) // The Safe
+          break
+        case 'bedroom':
+        case 'guest_room':
+          addFurn('bed', 0, -2)
+          addFurn('lamp', 2, -3)
+          addFurn('cabinet', -3, 0, Math.PI / 2)
+          addFurn('plant', 3, 2)
+          break
+        case 'kitchen':
+          addFurn('fridge', 3, 3, Math.PI)
+          addFurn('table', 0, 0)
+          addFurn('cabinet', -3, 3, Math.PI / 2)
+          addFurn('washer', -3, -3, Math.PI / 2)
+          break
+        case 'bathroom':
+          addFurn('toilet', 0, 3, Math.PI)
+          addFurn('cabinet', 3, 0, -Math.PI / 2)
+          addFurn('plant', -3, 3)
+          break
+        case 'office':
+          addFurn('desk', 0, 2, Math.PI)
+          addFurn('chair', 0, 0, Math.PI)
+          addFurn('bookshelf', -3, 0, Math.PI / 2)
+          addFurn('lamp', 3, 3)
+          addFurn('monitor', 0, 2, Math.PI)
+          break
+        case 'library':
+          addFurn('bookshelf', -3, -2, Math.PI / 2)
+          addFurn('bookshelf', -3, 2, Math.PI / 2)
+          addFurn('bookshelf', 3, -2, -Math.PI / 2)
+          addFurn('chair', 0, 0)
+          addFurn('table', 0, 1.5)
+          addFurn('lamp', 0, -2)
+          break
+        case 'gym':
+          addFurn('treadmill', 2, 0, -Math.PI / 2)
+          addFurn('dumbbell', -2, 0)
+          addFurn('bench', 0, 0)
+          addFurn('tv', 0, 3.5, Math.PI)
+          break
+        case 'garage':
+          addFurn('tool_chest', 3, 0, -Math.PI / 2)
+          addFurn('cabinet', -3, 3)
+          addFurn('washer', -3, -3)
+          addFurn('dryer', -1.5, -3)
+          break
+        case 'pantry':
+          addFurn('cabinet', -3, -2, Math.PI / 2)
+          addFurn('cabinet', 3, -2, -Math.PI / 2)
+          addFurn('fridge', 0, 3, Math.PI)
+          break
+        case 'hall':
+          if (Math.random() > 0.7) addFurn('plant', 0, 0)
+          if (Math.random() > 0.7) addFurn('bench', 3, 0, -Math.PI / 2)
+          break
+        case 'tech_lab':
+          addFurn('server_rack', -3, -3)
+          addFurn('server_rack', -3, 3)
+          addFurn('desk', 0, 0)
+          addFurn('monitor', 0, 0, Math.PI)
+          break
+        case 'art_studio':
+          addFurn('easel', 0, 0, -Math.PI / 4)
+          addFurn('sculpture', 2, 2)
+          addFurn('cabinet', -3, -3)
+          break
+        case 'music_room':
+          addFurn('piano', 0, -2, Math.PI)
+          addFurn('drum_kit', 3, 3, -Math.PI / 4)
+          addFurn('rug', 0, 0)
+          break
+      }
+    })
+
+    // 3. Hiding Spots
+    const searchableItems = newFurniture.filter(f =>
+      f.type !== 'chair' &&
+      f.type !== 'safe' &&
+      f.type !== 'dumbbell' &&
+      f.type !== 'monitor' &&
+      f.type !== 'rug' &&
+      f.type !== 'sculpture'
+    )
+
+    // Clamp total pieces to available items
+    const { totalPuzzlePieces } = get()
+    const finalCount = Math.min(totalPuzzlePieces, searchableItems.length)
+
+    const shuffled = [...searchableItems].sort(() => 0.5 - Math.random())
+    const selected = shuffled.slice(0, finalCount)
+    const hiddenMap: Record<string, boolean> = {}
+
+    searchableItems.forEach(f => hiddenMap[f.id] = false)
+    selected.forEach(f => hiddenMap[f.id] = true)
+
+    const code = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join('')
+
+    set({
+      gameState: 'playing',
+      secretCode: code,
+      puzzlePiecesFound: 0,
+      hasKey: false,
+      hiddenPieces: hiddenMap,
+      foundLocations: {},
+      rooms: newRooms,
+      furniture: newFurniture
+    })
+  },
+  searchLocation: (id: string) => set((state) => {
+    if (state.gameState !== 'playing') return {}
+    if (state.foundLocations[id]) return {}
+
+    const hasPiece = state.hiddenPieces[id]
+
+    return {
+      foundLocations: { ...state.foundLocations, [id]: true },
+      puzzlePiecesFound: hasPiece ? state.puzzlePiecesFound + 1 : state.puzzlePiecesFound
+    }
+  })
+}))
