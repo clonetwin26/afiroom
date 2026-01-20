@@ -71,7 +71,7 @@ export const UI = () => {
         }}>
           <h1>Passover Puzzle: Mansion Edition</h1>
           <p>Use WASD or Joystick to move. Click to search furniture.</p>
-          <p>Find 5 afikoman pieces to get the safe code.</p>
+          <p>Find all the afikoman pieces to get the safe code.</p>
 
           {/* Resume Button */}
           {useGameStore.getState().rooms.length > 0 && (
@@ -120,14 +120,17 @@ export const UI = () => {
           {showHelp && (
             <div style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              background: '#333', padding: '20px', borderRadius: '10px', maxWidth: '300px', border: '2px solid white'
+              background: 'rgba(0,0,0,0.9)', padding: '20px', borderRadius: '10px', maxWidth: '350px', border: '2px solid white',
+              zIndex: 3001
             }}>
-              <h3>How to Play</h3>
-              <p>1. Move around the mansion.</p>
-              <p>2. Click on furniture (Couch, Cabinets, Beds, etc.) to search for pieces.</p>
-              <p>3. Find 5 pieces to reveal the Secret Code.</p>
-              <p>4. Go to the Safe (in the Dining Room or random room) and enter the code to win!</p>
-              <button onClick={() => setShowHelp(false)} style={{ marginTop: '10px' }}>Close</button>
+              <h3 style={{ marginTop: 0 }}>How to Play</h3>
+              <div style={{ textAlign: 'left', fontSize: '16px', lineHeight: '1.5' }}>
+                <p><strong>Move:</strong> Left Joystick or WASD.</p>
+                <p><strong>Look:</strong> Swipe Screen or Mouse.</p>
+                <p><strong>Interact:</strong> Center view on object & Tap/Click.</p>
+                <p><strong>Goal:</strong> Find 5 pieces to get the Safe Code.</p>
+              </div>
+              <button onClick={() => setShowHelp(false)} style={{ marginTop: '15px', padding: '8px 16px', fontSize: '16px' }}>Got it!</button>
             </div>
           )}
         </div>
@@ -178,15 +181,18 @@ export const UI = () => {
           {showHelp && (
             <div style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              background: '#333', padding: '20px', borderRadius: '10px', maxWidth: '300px', border: '2px solid white',
-              color: 'white', pointerEvents: 'auto'
+              background: 'rgba(0,0,0,0.9)', padding: '20px', borderRadius: '10px', maxWidth: '350px', border: '2px solid white',
+              color: 'white', pointerEvents: 'auto', zIndex: 3001
             }}>
-              <h3>How to Play</h3>
-              <p>1. Move using WASD or Joystick.</p>
-              <p>2. Click furniture up close to search.</p>
-              <p>3. Colors: White Ring = Searchable, Red Ring = Already Searched.</p>
-              <p>4. Find 5 pieces for the code.</p>
-              <button onClick={() => setShowHelp(false)} style={{ marginTop: '10px' }}>Close</button>
+              <h3 style={{ marginTop: 0 }}>How to Play</h3>
+              <div style={{ textAlign: 'left', fontSize: '16px', lineHeight: '1.5' }}>
+                <p><strong>Move:</strong> Left Joystick (Mobile) or WASD (Desktop).</p>
+                <p><strong>Look:</strong> Swipe Screen (Mobile) or Mouse.</p>
+                <p><strong>Interact:</strong> Center your view on an object (look for the Ring) and <strong>Tap/Click anywhere</strong> to search.</p>
+                <p><strong>Goal:</strong> Find 5 Hidden Pieces in furniture to reveal the Secret Code.</p>
+                <p><strong>Win:</strong> Enter the code at the Safe.</p>
+              </div>
+              <button onClick={() => setShowHelp(false)} style={{ marginTop: '15px', padding: '8px 16px', fontSize: '16px' }}>Got it!</button>
             </div>
           )}
         </div>
