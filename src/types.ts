@@ -23,9 +23,13 @@ export interface GameStore {
   totalPuzzlePieces: number
   hasKey: boolean
   gridSize: number
-  joystickInput?: { x: number, y: number }
-  lookInput?: { x: number, y: number }
+  joystickInput: { x: number, y: number }
+  lookStickInput: { x: number, y: number }
+  lookInput: { x: number, y: number }
+  hoveredId: string | null
+  notification: string | null
   isMusicEnabled: boolean
+  isGyroEnabled: boolean
   timeOfDay: 'day' | 'night'
 
   hiddenPieces: Record<string, boolean>
@@ -41,7 +45,12 @@ export interface GameStore {
   searchLocation: (id: string) => void
   setGridSize: (size: number) => void
   setJoystickInput: (input: { x: number, y: number }) => void
+  setLookStickInput: (input: { x: number, y: number }) => void
   setLookInput: (input: { x: number, y: number }) => void
+  addLookInput: (input: { x: number, y: number }) => void
+  setHoveredId: (id: string | null) => void
+  showNotification: (msg: string) => void
   toggleMusic: () => void
+  toggleGyro: () => void
   setTotalPieces: (count: number) => void
 }

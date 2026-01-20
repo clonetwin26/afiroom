@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
-import { PointerLockControls } from '@react-three/drei'
+import { PointerLockControls, DeviceOrientationControls } from '@react-three/drei'
 import { Vector3 } from 'three'
+import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore'
 
 export const Player = () => {
@@ -156,82 +157,117 @@ export const Player = () => {
 
     // Touch Look Rotation
     const lookInput = useGameStore.getState().lookInput
+    
     if (lookInput && (lookInput.x !== 0 || lookInput.y !== 0)) {
-      // Sensitivity
-      const sens = 0.005
-      camera.rotation.y -= lookInput.x * sens
-      // Clamp pitch? camera.rotation.x is pitch?
-      // Basic FPS camera usually rotates Y on World axis, and X on local axis.
-      // For simple ThreeJS camera:
-      // camera.rotation.order = 'YXZ' usually.
-      // Let's just do simple Y rotation for now to turn around.
+       const sens = 0.005
+       camera.rotation.order = 'YXZ'
+       camera.rotation.y -= lookInput.x * sens
+       camera.rotation.x -= lookInput.y * sens // Inverted Pitch: Up swipes look Down
+       
+       const maxPitch = Math.PI / 2 - 0.1
+       camera.rotation.x = Math.max(-maxPitch, Math.min(maxPitch, camera.rotation.x))
+       
+       camera.rotation.x = Math.max(-maxPitch, Math.min(maxPitch, camera.rotation.x))
+       
+       useGameStore.getState().setLookInput({ x: 0, y: 0 })
+    }
 
-      // Reset delta in store? 
-      // No, the TouchLook component sends delta per move event.
-      // But useFrame runs 60fps.
-      // If TouchLook sets state, it persists until next move?
-      // TouchLook implementation updates store with delta.
-      // We should consume it and clear it?
-      // Actually, store update is React state.
-      // Better: TouchLook should probably write to a ref or we consume and zero it out?
-      // Or simpler: TouchLook just tracks movement and we read it.
-
-      // Issue: if user stops moving finger but keeps it down, delta is 0.
-      // TouchLook component sends dx/dy.
-      // If we read it here, we apply it.
-      // But if we don't clear it, we might re-apply it next frame if store didn't update?
-      // Attempting to consume directly from store state might be laggy.
-
-      // BETTER: direct ref usage or modify camera inside TouchLook?
-      // Since TouchLook is UI, it doesn't have access to camera easily (unless we use Drei hooks in UI? No, UI is outside Canvas).
-
-      // Fine: We read store.
-      // We need to make sure we don't apply the same delta twice.
-      // But `lookInput` in store is "current delta".
-      // TouchLook updates it on `touchmove`.
-      // If `touchmove` doesn't fire (finger still), delta is 0 (handled by handleMove logic if we tracked it right? No).
-      // My TouchLook `handleMove` sets state.
-      // If `touchmove` stops firing, store state stays at last delta?
-      // YES. That would cause "drift" (continuous spinning).
-
-      // Fix: TouchLook should reset delta after frame?
-      // Hard to sync.
-
-      // Alternative: TouchLook sets "rotation velocity" or "target rotation"?
-      // No.
-
-      // Quick Fix: In Player.tsx, we read it, apply it, and... we can't clear store state easily in useFrame loop without re-triggering stuff.
-      // PROPER FIX: TouchLook should NOT put delta in Store State.
-      // It should put it in a Mutable Ref in the Store (zustand transient update)?
-      // OR `useGameStore.getState().lookInput` is just read, and we assume it's "velocity"?
-      // If it's drag-to-look, it's not velocity. It's absolute positional delta.
-
-      // Let's change TouchLook to simply drive `camera.rotation`?
-      // But TouchLook is outside Canvas (in UI). It can't see `camera`.
-
-      // OK, Plan B:
-      // Add `rotation` to GameStore (global camera rotation target)? No.
-      // Let's use `lookVelocity` in store.
-      // If finger moves, we set velocity. If stops, velocity 0.
-      // `touchmove` gives position.
-      // Delta = pos - lastPos.
-      // If we treat Delta as "amount to rotate this frame"?
-      // We need to set it to 0 after consuming.
-
-      useGameStore.getState().setLookInput({ x: 0, y: 0 })
+    // 3. Raycast for Interaction (Reticle)
+    // We raycast from center of screen (0, 0)
+    raycaster.current.setFromCamera({ x: 0, y: 0 } as any, camera)
+    // Intersect with scene children - optimize by tagging?
+    // We'll traverse or just check specific layer? 
+    // Checking ALL scene objects is heavy.
+    // Ideally we have a list of interactables.
+    // Furniture items are in the scene.
+    // Let's use `scene.children` but filter?
+    // Actually, R3F's `raycaster` is usually shared.
+    // Let's use a ref for Raycaster.
+    
+    const intersects = raycaster.current.intersectObjects(scene.children, true)
+    
+    let foundId: string | null = null
+    
+    // Find first with furnitureId
+    for (let i = 0; i < intersects.length; i++) {
+        const obj = intersects[i].object
+        // Check up the tree for userData.furnitureId
+        let curr: any = obj
+        while (curr) {
+            if (curr.userData && curr.userData.furnitureId) {
+                foundId = curr.userData.furnitureId
+                break
+            }
+            curr = curr.parent
+        }
+        if (foundId) break
+        // Stop if we hit a wall? Wall should block?
+        // If we hit a wall (Mesh) before furniture, we should stop if wall is opaque.
+        // Assuming walls are meshes without furnitureId.
+        if (!foundId && obj.type === 'Mesh') {
+             // If closer than furniture, it blocks.
+             // We continue to next intersection? 
+             // intersects are sorted by distance.
+             // So if first hit is wall, we stop.
+             break 
+        }
+    }
+    
+    const currentHover = useGameStore.getState().hoveredId
+    if (foundId !== currentHover) {
+        useGameStore.getState().setHoveredId(foundId)
     }
   })
+
+  // Global Interaction Handler
+  useEffect(() => {
+    const handleInteract = () => {
+        const { hoveredId, gameState, furniture } = useGameStore.getState()
+        if (gameState !== 'playing' || !hoveredId) return
+        
+        // Find item
+        const item = furniture.find(f => f.id === hoveredId)
+        if (!item) return
+
+        // Distance Check
+        const dist = camera.position.distanceTo(new Vector3(...item.position))
+        if (dist > 6) {
+            useGameStore.getState().showNotification('Too Far!')
+            return 
+        }
+
+        // Logic from Furniture.tsx
+        const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug'
+        
+        if (item.type === 'safe') {
+            useGameStore.getState().setGameState('safe_interaction')
+        } else if (isSearchable) {
+            useGameStore.getState().searchLocation(item.id)
+        }
+    }
+
+    window.addEventListener('click', handleInteract)
+    window.addEventListener('touchstart', handleInteract) // For mobile tap
+    
+    return () => {
+        window.removeEventListener('click', handleInteract)
+        window.removeEventListener('touchstart', handleInteract)
+    }
+  }, [camera])
+
+  const raycaster = useRef(new THREE.Raycaster())
+  const { scene } = useThree()
+  const isGyroEnabled = useGameStore(state => state.isGyroEnabled)
+
 
   // Ensure pointer unlocks when not playing
   useEffect(() => {
     if (gameState !== 'playing') {
-      document.exitPointerLock()
+      document.exitPointerLock?.()
     }
   }, [gameState])
 
   // Reset position ONLY when a new map is generated (when rooms reference changes)
-  // This effectively handles "Start Game" vs "Resume" automatically,
-  // because "Resume" does not regenerate rooms.
   const rooms = useGameStore(state => state.rooms)
   useEffect(() => {
     if (rooms.length > 0) {
@@ -241,10 +277,20 @@ export const Player = () => {
     }
   }, [rooms, camera])
 
+  // NOTE: If Gyro is enabled, we use DeviceOrientationControls instead of pointer lock or swipe look.
+  // DeviceOrientationControls handles rotation automatically.
+  // We should prevent manual rotation logic from fighting it if enabled.
+  
+  // Actually, we can just NOT render Look logic if Gyro is on?
+  // But wait, the standard DeviceOrientationControls from Drei might set rotation directly.
+  // Let's modify the useFrame loop to skip manual rotation if gyro is enabled.
+
   // Render controls only when playing
+  // Also render DeviceOrientationControls if enabled
   return (
     <>
       {gameState === 'playing' && <PointerLockControls />}
+      {gameState === 'playing' && isGyroEnabled && <DeviceOrientationControls />}
     </>
   )
 }

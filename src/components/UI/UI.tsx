@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGameStore } from '../../store/gameStore'
 import { Joystick } from './Joystick'
-import { TouchLook } from './TouchLook'
+import { TouchControls } from './TouchControls'
 
 export const UI = () => {
   const gameState = useGameStore(state => state.gameState)
@@ -18,15 +18,12 @@ export const UI = () => {
   const [piecesCount, setPiecesCount] = useState(5)
   const [showHelp, setShowHelp] = useState(false)
 
-  const [notification, setNotification] = useState('')
-  const [opacity, setOpacity] = useState(0)
+  const notification = useGameStore(state => state.notification)
+  const showNotification = useGameStore(state => state.showNotification)
 
   useEffect(() => {
     if (puzzlePiecesFound > 0) {
-      setNotification('Puzzle Piece Found!')
-      setOpacity(1)
-      const t = setTimeout(() => setOpacity(0), 3000)
-      return () => clearTimeout(t)
+      showNotification('Puzzle Piece Found!')
     }
   }, [puzzlePiecesFound])
 
@@ -63,6 +60,7 @@ export const UI = () => {
   return (
     <>
       <MusicButton />
+
 
       {gameState === 'intro' && (
         <div style={{
@@ -160,15 +158,7 @@ export const UI = () => {
             </button>
           </div>
 
-          {/* Notification Overlay */}
-          <div style={{
-            position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
-            color: '#ffff00', fontSize: '40px', fontWeight: 'bold',
-            textShadow: '0 0 10px #000', pointerEvents: 'none',
-            opacity: opacity, transition: 'opacity 1s ease-in-out'
-          }}>
-            {notification}
-          </div>
+
 
           {/* Crosshair */}
           <div style={{
@@ -177,13 +167,13 @@ export const UI = () => {
             boxShadow: '0 0 4px black', pointerEvents: 'none', zIndex: 50
           }} />
 
-          {/* Virtual Joystick (Bottom Left) */}
+          {/* Left Joystick (Move) */}
           <div style={{ pointerEvents: 'auto' }}>
-            <Joystick onMove={(x, y) => setJoystickInput({ x, y })} />
+            <Joystick onMove={(x, y) => setJoystickInput({ x, y })} style={{ bottom: '50px', left: '50px' }} />
           </div>
-          <div style={{ pointerEvents: 'auto' }}>
-            <TouchLook />
-          </div>
+
+          {/* Touch Controls (Invisible Layer) */}
+          <TouchControls />
 
           {showHelp && (
             <div style={{
@@ -206,7 +196,7 @@ export const UI = () => {
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,0,0,0.8)', color: 'white', zIndex: 10
+          background: 'rgba(0,0,0,0.8)', color: 'white', zIndex: 2000, pointerEvents: 'auto'
         }}>
           <h2>Enter Code</h2>
           <input
@@ -222,12 +212,28 @@ export const UI = () => {
             <button onClick={() => setEnteredCode('')} style={{ background: 'red', color: 'white' }}>CLR</button>
             <button onClick={() => {
               if (enteredCode === secretCode) setGameState('won')
-              else alert('Incorrect!')
+              else {
+                setEnteredCode('')
+                showNotification('Access Denied!')
+              }
             }} style={{ background: 'green', color: 'white' }}>OK</button>
           </div>
-          <button style={{ marginTop: '20px' }} onClick={() => setGameState('playing')}>Cancel</button>
+          <button style={{ marginTop: '20px' }} onClick={(e) => {
+            e.stopPropagation()
+            setGameState('playing')
+          }}>Cancel</button>
         </div>
       )}
+
+      {/* Global Notification Overlay */}
+      <div style={{
+        position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
+        color: '#ff4444', fontSize: '40px', fontWeight: 'bold',
+        textShadow: '0 0 10px #000', pointerEvents: 'none', zIndex: 3000,
+        opacity: notification ? 1 : 0, transition: 'opacity 0.5s ease-in-out'
+      }}>
+        {notification}
+      </div>
 
       {gameState === 'won' && (
         <div style={{

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Box, Cylinder, Sphere, Text, Ring } from '@react-three/drei'
 import { useGameStore } from '../../store/gameStore'
 import type { FurnitureItem } from '../../types'
-import { Interactable } from './Interactable'
 import { useThree } from '@react-three/fiber'
 import { Confetti } from '../FX/Confetti'
 import * as THREE from 'three'
@@ -194,49 +193,36 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
 }
 
 export const Furniture = ({ item, textures }: { item: FurnitureItem, textures: any }) => {
-  const searchLocation = useGameStore(state => state.searchLocation)
-  const setGameState = useGameStore(state => state.setGameState)
   const foundLocations = useGameStore(state => state.foundLocations)
   const hiddenPieces = useGameStore(state => state.hiddenPieces)
-  const { camera } = useThree()
+  useThree()
 
   const isSearched = foundLocations[item.id]
   const hasPiece = hiddenPieces[item.id]
   const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug'
-  const [hovered, setHover] = useState(false)
-  const [tooFar, setTooFar] = useState(false)
+  // Use global hovered state
+  const hoveredId = useGameStore(state => state.hoveredId)
+  const hovered = hoveredId === item.id
+
   const [showConfetti, setShowConfetti] = useState(false)
 
   useEffect(() => {
     if (isSearched && hasPiece) {
       setShowConfetti(true)
-      // Confetti component will handle its own physics and fade ideally, 
-      // but if it's a particle burst it will just play once.
-      // We keep it mounted so particles can fall.
     }
   }, [isSearched, hasPiece])
 
-  const handleInteraction = (e: any) => {
-    e.stopPropagation()
-    const dist = camera.position.distanceTo(new THREE.Vector3(...item.position))
-    if (dist > 6) {
-      setTooFar(true)
-      setTimeout(() => setTooFar(false), 1000)
-      return
-    }
-
-    if (item.type === 'safe') {
-      setGameState('safe_interaction')
-    } else if (isSearchable) {
-      searchLocation(item.id)
-    }
-  }
+  // NOTE: Interaction is now handled globally via Reticle + Click
+  // But we can keep this for direct clicks if we want hybrid?
+  // Actually, let's allow the Player raycaster to handle interaction logic too.
 
   return (
-    <group position={item.position} rotation={item.rotation}>
-      <Interactable onClick={handleInteraction}>
-        <group onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)}>
-          <Model type={item.type} color={item.color} textures={textures} />
+    <group position={item.position} rotation={item.rotation} userData={{ furnitureId: item.id }}>
+      {/* Remove local Interactable for click if we move to global handler, 
+          BUT for now let's keep it simple: WE NEED userData for Raycaster */}
+      <group>
+        <Model type={item.type} color={item.color} textures={textures} />
+
 
           {/* Highlight Ring on Floor */}
           {hovered && isSearchable && !isSearched && (
@@ -297,16 +283,8 @@ export const Furniture = ({ item, textures }: { item: FurnitureItem, textures: a
           {/* Confetti Spawn */}
           {showConfetti && (
             <Confetti position={[0, 2, 0]} count={50} />
-          )}
-
-          {/* Too Far Warning */}
-          {tooFar && (
-            <Text position={[0, 3, 0]} fontSize={0.5} color="red">
-              Too Far!
-            </Text>
-          )}
-        </group>
-      </Interactable>
+        )}
+      </group>
     </group>
   )
 }

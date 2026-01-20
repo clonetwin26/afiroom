@@ -1,23 +1,25 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 // unused import removed
 
-export const Joystick = ({ onMove }: { onMove: (x: number, y: number) => void }) => {
+export const Joystick = ({ onMove, style }: { onMove: (x: number, y: number) => void, style?: React.CSSProperties }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const knobRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(false)
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const startPos = useRef({ x: 0, y: 0 })
+  const touchId = useRef<number | null>(null)
 
-  const handleStart = (clientX: number, clientY: number) => {
+  const handleStart = (touch: React.Touch) => {
     setActive(true)
-    startPos.current = { x: clientX, y: clientY }
+    touchId.current = touch.identifier
+    startPos.current = { x: touch.clientX, y: touch.clientY }
     setPos({ x: 0, y: 0 })
   }
 
-  const handleMove = (clientX: number, clientY: number) => {
-    if (!active) return
-    const dx = clientX - startPos.current.x
-    const dy = clientY - startPos.current.y
+  const handleMove = (touch: React.Touch) => {
+    if (!active || touch.identifier !== touchId.current) return
+    const dx = touch.clientX - startPos.current.x
+    const dy = touch.clientY - startPos.current.y
     const dist = Math.sqrt(dx * dx + dy * dy)
     const maxDist = 40
 
@@ -33,25 +35,13 @@ export const Joystick = ({ onMove }: { onMove: (x: number, y: number) => void })
     onMove(x / maxDist, y / maxDist)
   }
 
-  const handleEnd = () => {
+  const handleEnd = (touch: React.Touch) => {
+    if (touch.identifier !== touchId.current) return
     setActive(false)
+    touchId.current = null
     setPos({ x: 0, y: 0 })
     onMove(0, 0)
   }
-
-  useEffect(() => {
-    const move = (e: TouchEvent) => handleMove(e.touches[0].clientX, e.touches[0].clientY)
-    const end = () => handleEnd()
-
-    if (active) {
-      window.addEventListener('touchmove', move)
-      window.addEventListener('touchend', end)
-    }
-    return () => {
-      window.removeEventListener('touchmove', move)
-      window.removeEventListener('touchend', end)
-    }
-  }, [active])
 
   return (
     <div
@@ -61,9 +51,26 @@ export const Joystick = ({ onMove }: { onMove: (x: number, y: number) => void })
         width: '100px', height: '100px', borderRadius: '50%',
         background: 'rgba(255,255,255,0.2)', touchAction: 'none',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        zIndex: 1000 // Ensure it's on top
+        zIndex: 1000,
+        ...style // Override defaults
       }}
-      onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
+      onTouchStart={(e) => {
+        // Prevent default to stop scrolling if touching joystick
+        e.preventDefault()
+        if (!active) handleStart(e.changedTouches[0])
+      }}
+      onTouchMove={(e) => {
+        e.preventDefault()
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          handleMove(e.changedTouches[i])
+        }
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault()
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          handleEnd(e.changedTouches[i])
+        }
+      }}
     >
       <div
         ref={knobRef}

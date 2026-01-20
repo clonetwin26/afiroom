@@ -4,13 +4,17 @@ import type { GameStore, RoomData, FurnitureItem } from '../types'
 export const useGameStore = create<GameStore>((set, get) => ({
   gameState: 'intro',
   joystickInput: { x: 0, y: 0 },
+  lookStickInput: { x: 0, y: 0 },
   lookInput: { x: 0, y: 0 },
+  hoveredId: null,
+  notification: null,
   secretCode: '1234',
   puzzlePiecesFound: 0,
   totalPuzzlePieces: 5,
   hasKey: false,
   gridSize: 5,
   isMusicEnabled: true, // Default ON
+  isGyroEnabled: false, // Default OFF (Requires permission)
   timeOfDay: 'night', // Default Night
 
   hiddenPieces: {},
@@ -21,8 +25,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setGameState: (state) => set({ gameState: state }),
   setGridSize: (size) => set({ gridSize: size }),
   setJoystickInput: (input) => set({ joystickInput: input }),
+  setLookStickInput: (input) => set({ lookStickInput: input }),
   setLookInput: (input) => set({ lookInput: input }),
+  addLookInput: (input: { x: number, y: number }) => set((state) => ({ lookInput: { x: state.lookInput.x + input.x, y: state.lookInput.y + input.y } })),
+  setHoveredId: (id) => set({ hoveredId: id }),
+  showNotification: (msg) => {
+    set({ notification: msg })
+    setTimeout(() => set({ notification: null }), 3000)
+  },
   toggleMusic: () => set(state => ({ isMusicEnabled: !state.isMusicEnabled })),
+  toggleGyro: () => set(state => ({ isGyroEnabled: !state.isGyroEnabled })),
   setTotalPieces: (count) => set({ totalPuzzlePieces: count }),
   registerLocation: () => { },
   resetGame: () => {

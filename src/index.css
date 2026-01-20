@@ -27,6 +27,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden; /* Prevent scrollbars for the 3D canvas */
+  touch-action: none;
 }
 
 #root {
