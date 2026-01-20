@@ -113,11 +113,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const [rx, ry, rz] = room.position
 
       const addFurn = (type: FurnitureItem['type'], lx: number, lz: number, rotY = 0) => {
+        let variant: string | undefined = undefined
+        if (type === 'painting') {
+          variant = Math.random() > 0.25 ? 'passover' : undefined
+        }
         newFurniture.push({
           id: `${room.id}_${type}_${Math.random().toString(36).substr(2, 4)}`,
           type,
           position: [rx + lx, ry, rz + lz],
-          rotation: [0, rotY, 0]
+          rotation: [0, rotY, 0],
+          variant
         })
       }
 
@@ -129,6 +134,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('lamp', -3.5, 3.5)
           addFurn('plant', 3.5, 3.5)
           if (Math.random() > 0.5) addFurn('bookshelf', -3.5, -2, Math.PI / 2)
+          addFurn('rug', 0, 0)
+          addFurn('painting', 2.5, -4.8) // Offset from center
+          addFurn('painting', -4.8, 2.5, Math.PI / 2) // Side wall offset
           break
         case 'dining':
           addFurn('table', 0, 0)
@@ -139,6 +147,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('chair', 0, 1, Math.PI)
           addFurn('cabinet', 0, 3.5, Math.PI)
           addFurn('safe', 3.5, 3.5, Math.PI) // The Safe
+          addFurn('painting', -4.8, 2, Math.PI / 2)
           break
         case 'bedroom':
         case 'guest_room':
@@ -146,6 +155,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('lamp', 3, -3) // Corner
           addFurn('cabinet', -3.5, 0, Math.PI / 2) // Side wall
           addFurn('plant', 3.5, 2)
+          addFurn('rug', 0, 0)
+          addFurn('painting', 2.5, -4.8) // Above bed, offset
           break
         case 'kitchen':
           addFurn('fridge', 3.5, 3.5, Math.PI) // Corner
@@ -164,6 +175,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('bookshelf', -3, 0, Math.PI / 2)
           addFurn('lamp', 3, 3)
           addFurn('monitor', 0, 2, Math.PI)
+          addFurn('rug', 0, 0)
+          addFurn('painting', 4.8, 2, -Math.PI / 2)
           break
         case 'library':
           addFurn('bookshelf', -3, -2, Math.PI / 2)
@@ -172,6 +185,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('chair', 0, 0)
           addFurn('table', 0, 1.5)
           addFurn('lamp', 0, -2)
+          addFurn('rug', 0, 0)
           break
         case 'gym':
           addFurn('treadmill', 2, 0, -Math.PI / 2)
@@ -193,6 +207,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         case 'hall':
           if (Math.random() > 0.7) addFurn('plant', 0, 0)
           if (Math.random() > 0.7) addFurn('bench', 3, 0, -Math.PI / 2)
+          addFurn('painting', -4.8, 2.5, Math.PI / 2) // Art in hall
           break
         case 'tech_lab':
           addFurn('server_rack', -3, -3)
@@ -204,11 +219,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
           addFurn('easel', 0, 0, -Math.PI / 4)
           addFurn('sculpture', 2, 2)
           addFurn('cabinet', -3, -3)
+          addFurn('painting', 4.8, 2, -Math.PI / 2)
+          addFurn('painting', -2.5, -4.8)
           break
         case 'music_room':
           addFurn('piano', 0, -2, Math.PI)
           addFurn('drum_kit', 3, 3, -Math.PI / 4)
           addFurn('rug', 0, 0)
+          addFurn('painting', -4.8, 2.5, Math.PI / 2)
           break
       }
     })

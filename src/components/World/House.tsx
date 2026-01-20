@@ -89,23 +89,47 @@ export const House = () => {
     wallpaper: 'textures/wall_wallpaper_1768925379995.png',
     furnitureWood: 'textures/furniture_wood_1768925398400.png',
     furnitureFabric: 'textures/furniture_fabric_1768925469911.png',
-    furnitureMetal: 'textures/metal_texture_1768925485596.png'
+    furnitureMetal: 'textures/metal_texture_1768925485596.png',
+    painting: 'textures/painting_abstract.png',
+    rug: 'textures/rug_persian.png',
+    woodMahogany: 'textures/wood_mahogany.png',
+    woodOak: 'textures/wood_oak.png',
+    woodRustic: 'textures/wood_rustic.png',
+    books: 'textures/bookshelf_books.png',
+    paintingPassover: 'textures/painting_passover.png'
   })
 
   // Configure textures once
   textures.wood.wrapS = textures.wood.wrapT = THREE.RepeatWrapping
   textures.tile.wrapS = textures.tile.wrapT = THREE.RepeatWrapping
   textures.wallpaper.wrapS = textures.wallpaper.wrapT = THREE.RepeatWrapping
+  textures.woodMahogany.wrapS = textures.woodMahogany.wrapT = THREE.RepeatWrapping
+  textures.woodOak.wrapS = textures.woodOak.wrapT = THREE.RepeatWrapping
+  textures.woodRustic.wrapS = textures.woodRustic.wrapT = THREE.RepeatWrapping
+
+  // Books texture might need repeat if shelf is wide, but let's try 1:1 first or maybe repeat horizontal
+  textures.books.wrapS = textures.books.wrapT = THREE.RepeatWrapping
+  textures.books.repeat.set(2, 1)
 
   textures.wood.repeat.set(4, 4)
   textures.tile.repeat.set(4, 4)
   textures.wallpaper.repeat.set(4, 2)
+  textures.woodMahogany.repeat.set(2, 2)
+  textures.woodOak.repeat.set(2, 2)
+  textures.woodRustic.repeat.set(2, 2)
 
   // Map for furniture
   const furnitureTextures = {
-    wood: textures.furnitureWood,
+    wood: textures.furnitureWood, // Default
+    woodMahogany: textures.woodMahogany,
+    woodOak: textures.woodOak,
+    woodRustic: textures.woodRustic,
     fabric: textures.furnitureFabric,
-    metal: textures.furnitureMetal
+    metal: textures.furnitureMetal,
+    painting: textures.painting,
+    paintingPassover: textures.paintingPassover,
+    rug: textures.rug,
+    books: textures.books
   }
 
   if (!rooms || rooms.length === 0) return null

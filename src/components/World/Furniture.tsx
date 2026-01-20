@@ -6,9 +6,12 @@ import { useThree } from '@react-three/fiber'
 import { Confetti } from '../FX/Confetti'
 import * as THREE from 'three'
 
-const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?: string, textures: any }) => {
+const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type'], color?: string, textures: any, variant?: string }) => {
   // Materials
-  const woodMat = <meshStandardMaterial map={textures.wood} />
+  const mahoganyMat = <meshStandardMaterial map={textures.woodMahogany} />
+  const oakMat = <meshStandardMaterial map={textures.woodOak} />
+  const rusticMat = <meshStandardMaterial map={textures.woodRustic} />
+
   const fabricMat = <meshStandardMaterial map={textures.fabric} color={color || "white"} />
   const metalMat = <meshStandardMaterial map={textures.metal} metalness={0.8} roughness={0.2} />
   const darkMat = <meshStandardMaterial color="#222" />
@@ -38,30 +41,30 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
     case 'table':
       return (
         <group>
-          <Box args={[2, 0.1, 2]} position={[0, 1, 0]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 0.2]} position={[-0.8, 0.5, -0.8]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 0.2]} position={[0.8, 0.5, -0.8]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 0.2]} position={[-0.8, 0.5, 0.8]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 0.2]} position={[0.8, 0.5, 0.8]}>{woodMat}</Box>
+          <Box args={[2, 0.1, 2]} position={[0, 1, 0]}>{oakMat}</Box>
+          <Box args={[0.2, 1, 0.2]} position={[-0.8, 0.5, -0.8]}>{oakMat}</Box>
+          <Box args={[0.2, 1, 0.2]} position={[0.8, 0.5, -0.8]}>{oakMat}</Box>
+          <Box args={[0.2, 1, 0.2]} position={[-0.8, 0.5, 0.8]}>{oakMat}</Box>
+          <Box args={[0.2, 1, 0.2]} position={[0.8, 0.5, 0.8]}>{oakMat}</Box>
         </group>
       )
     case 'desk':
       return (
         <group>
-          <Box args={[2.5, 0.1, 1.2]} position={[0, 1, 0]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 1]} position={[-1, 0.5, 0]}>{woodMat}</Box>
-          <Box args={[0.2, 1, 1]} position={[1, 0.5, 0]}>{woodMat}</Box>
+          <Box args={[2.5, 0.1, 1.2]} position={[0, 1, 0]}>{mahoganyMat}</Box>
+          <Box args={[0.2, 1, 1]} position={[-1, 0.5, 0]}>{mahoganyMat}</Box>
+          <Box args={[0.2, 1, 1]} position={[1, 0.5, 0]}>{mahoganyMat}</Box>
         </group>
       )
     case 'chair':
       return (
         <group>
-          <Box args={[0.8, 0.1, 0.8]} position={[0, 0.5, 0]}>{woodMat}</Box>
-          <Box args={[0.8, 0.8, 0.1]} position={[0, 0.9, -0.35]}>{woodMat}</Box>
-          <Box args={[0.1, 0.5, 0.1]} position={[-0.3, 0.25, -0.3]}>{woodMat}</Box>
-          <Box args={[0.1, 0.5, 0.1]} position={[0.3, 0.25, -0.3]}>{woodMat}</Box>
-          <Box args={[0.1, 0.5, 0.1]} position={[-0.3, 0.25, 0.3]}>{woodMat}</Box>
-          <Box args={[0.1, 0.5, 0.1]} position={[0.3, 0.25, 0.3]}>{woodMat}</Box>
+          <Box args={[0.8, 0.1, 0.8]} position={[0, 0.5, 0]}>{oakMat}</Box>
+          <Box args={[0.8, 0.8, 0.1]} position={[0, 0.9, -0.35]}>{oakMat}</Box>
+          <Box args={[0.1, 0.5, 0.1]} position={[-0.3, 0.25, -0.3]}>{oakMat}</Box>
+          <Box args={[0.1, 0.5, 0.1]} position={[0.3, 0.25, -0.3]}>{oakMat}</Box>
+          <Box args={[0.1, 0.5, 0.1]} position={[-0.3, 0.25, 0.3]}>{oakMat}</Box>
+          <Box args={[0.1, 0.5, 0.1]} position={[0.3, 0.25, 0.3]}>{oakMat}</Box>
         </group>
       )
     case 'lamp':
@@ -76,16 +79,17 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
     case 'bookshelf':
       return (
         <group>
-          <Box args={[2, 4, 0.5]} position={[0, 2, 0]}>{woodMat}</Box>
-          <Box args={[1.8, 0.4, 0.52]} position={[0, 1, 0]}><meshStandardMaterial color="red" /></Box>
-          <Box args={[1.8, 0.4, 0.52]} position={[0, 2.5, 0]}><meshStandardMaterial color="blue" /></Box>
+          <Box args={[2, 4, 0.5]} position={[0, 2, 0]}>{mahoganyMat}</Box>
+          {/* Books with Texture */}
+          <Box args={[1.8, 0.8, 0.52]} position={[0, 1.2, 0]}><meshStandardMaterial map={textures.books} /></Box>
+          <Box args={[1.8, 0.8, 0.52]} position={[0, 2.8, 0]}><meshStandardMaterial map={textures.books} /></Box>
         </group>
       )
     case 'bed':
       return (
         <group>
           <Box args={[2, 0.6, 3]} position={[0, 0.3, 0]}><meshStandardMaterial color="white" /></Box>
-          <Box args={[2, 0.8, 0.2]} position={[0, 0.4, -1.6]}>{woodMat}</Box>
+          <Box args={[2, 0.8, 0.2]} position={[0, 0.4, -1.6]}>{oakMat}</Box>
         </group>
       )
     case 'toilet':
@@ -112,7 +116,7 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
         </group>
       )
     case 'cabinet':
-      return <Box args={[1.5, 1.5, 1]} position={[0, 0.75, 0]}>{woodMat}</Box>
+      return <Box args={[1.5, 1.5, 1]} position={[0, 0.75, 0]}>{oakMat}</Box>
     case 'tool_chest':
       return <Box args={[2, 1.5, 1]} position={[0, 0.75, 0]}><meshStandardMaterial color="red" metalness={0.7} /></Box>
     case 'plant':
@@ -137,7 +141,7 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
         </group>
       )
     case 'bench':
-      return <Box args={[2, 0.5, 0.8]} position={[0, 0.25, 0]}>{woodMat}</Box>
+      return <Box args={[2, 0.5, 0.8]} position={[0, 0.25, 0]}>{rusticMat}</Box>
     case 'dumbbell':
       return (
         <group position={[0, 0.1, 0]}>
@@ -156,8 +160,8 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
     case 'easel':
       return (
         <group>
-          <Cylinder args={[0.05, 0.05, 2]} position={[-0.5, 1, 0]} rotation={[0, 0, -0.2]}><meshStandardMaterial color="brown" /></Cylinder>
-          <Cylinder args={[0.05, 0.05, 2]} position={[0.5, 1, 0]} rotation={[0, 0, 0.2]}><meshStandardMaterial color="brown" /></Cylinder>
+          <Cylinder args={[0.05, 0.05, 2]} position={[-0.5, 1, 0]} rotation={[0, 0, -0.2]}>{rusticMat}</Cylinder>
+          <Cylinder args={[0.05, 0.05, 2]} position={[0.5, 1, 0]} rotation={[0, 0, 0.2]}>{rusticMat}</Cylinder>
           <Box args={[1.2, 0.8, 0.1]} position={[0, 1.5, 0.1]}><meshStandardMaterial color="white" /></Box>
         </group>
       )
@@ -180,12 +184,28 @@ const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?:
         </group>
       )
     case 'rug':
-      return <Box args={[3, 0.02, 2]} position={[0, 0.01, 0]}><meshStandardMaterial color="purple" /></Box>
+      return <Box args={[3, 0.02, 2]} position={[0, 0.01, 0]}><meshStandardMaterial map={textures.rug} /></Box>
     case 'safe':
       return (
         <Box args={[1.5, 1.5, 1.5]} position={[0, 0.75, 0]}>
           <meshStandardMaterial color="#444" metalness={0.9} roughness={0.1} />
         </Box>
+      )
+    case 'painting':
+      const paintingTex = variant === 'passover' ? textures.paintingPassover : textures.painting
+      const frameColor = variant === 'passover' ? '#FFD700' : '#D4AF37'
+      return (
+        <group position={[0, 2, 0]}> {/* Higher up on wall */}
+          {/* Frame */}
+          <Box args={[1.7, 1.7, 0.05]} position={[0, 0, -0.02]}>
+            <meshStandardMaterial color={frameColor} metalness={0.8} roughness={0.2} />
+          </Box>
+          {/* Canvas */}
+          <Box args={[1.5, 1.5, 0.02]}>
+            {/* Use white color to not tint the texture */}
+            <meshStandardMaterial map={paintingTex} color="white" />
+          </Box>
+        </group>
       )
     default:
       return <Box position={[0, 0.5, 0]}><meshStandardMaterial color="magenta" /></Box>
@@ -221,7 +241,7 @@ export const Furniture = ({ item, textures }: { item: FurnitureItem, textures: a
       {/* Remove local Interactable for click if we move to global handler, 
           BUT for now let's keep it simple: WE NEED userData for Raycaster */}
       <group>
-        <Model type={item.type} color={item.color} textures={textures} />
+        <Model type={item.type} color={item.color} textures={textures} variant={item.variant} />
 
 
           {/* Highlight Ring on Floor */}

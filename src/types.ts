@@ -10,10 +10,11 @@ export interface RoomData {
 
 export interface FurnitureItem {
   id: string
-  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture'
+  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture' | 'painting'
   position: [number, number, number]
   rotation: [number, number, number]
   color?: string
+  variant?: string
 }
 
 export interface GameStore {
