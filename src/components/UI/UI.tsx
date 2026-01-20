@@ -67,8 +67,12 @@ export const UI = () => {
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           background: 'rgba(0,0,0,0.8)', color: 'white', fontFamily: 'Arial',
-          zIndex: 1500
+          zIndex: 1500, overflowY: 'auto', WebkitOverflowScrolling: 'touch'
         }}>
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', minHeight: '100%', padding: '20px'
+          }}>
           <h1>Passover Puzzle: Mansion Edition</h1>
           <p>Use WASD or Joystick to move. Click to search furniture.</p>
           <p>Find all the afikoman pieces to get the safe code.</p>
@@ -133,6 +137,7 @@ export const UI = () => {
               <button onClick={() => setShowHelp(false)} style={{ marginTop: '15px', padding: '8px 16px', fontSize: '16px' }}>Got it!</button>
             </div>
           )}
+          </div>
         </div>
       )
       }

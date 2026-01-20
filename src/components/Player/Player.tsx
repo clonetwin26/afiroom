@@ -247,11 +247,9 @@ export const Player = () => {
     }
 
     window.addEventListener('click', handleInteract)
-    window.addEventListener('touchstart', handleInteract) // For mobile tap
     
     return () => {
-        window.removeEventListener('click', handleInteract)
-        window.removeEventListener('touchstart', handleInteract)
+      window.removeEventListener('click', handleInteract)
     }
   }, [camera])
 

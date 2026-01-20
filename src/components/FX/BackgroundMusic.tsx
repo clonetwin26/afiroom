@@ -27,41 +27,113 @@ export const BackgroundMusic = ({ enabled }: { enabled: boolean }) => {
     // Faster, busy, thinking music.
     // Base tempo: ~135 BPM
 
-    // Bass Pulse (16th notes)
-    // Bass Pulse REMOVED
+    // Passover Mystery Vamp (Klezmer/Phrygian Dominant)
+    // Style: Accordion/Clarinet-ish Sawtooth
+    // Key: G Phrygian (G, Ab, B, C, D, Eb, F, G)
+    // Tempo: ~110 BPM (16th note ~= 0.136s)
 
+    const baseTime = 0.14
 
-    // Arpeggiator Loop
-    // Notes: A minor pentatonic ish (A, C, D, E, G)
-    const notes = [440, 523.25, 587.33, 659.25, 783.99, 880, 783.99, 659.25]
+    // Frequencies
+    const G3 = 196.00
+    const D3 = 146.83
+
+    const G4 = 392.00
+    const Ab4 = 415.30
+    const B4 = 493.88
+    const C5 = 523.25
+    const D5 = 587.33
+    const Eb5 = 622.25
+    const F5 = 698.46
+    const G5 = 783.99
+
+    // Sequence (16 steps per bar, 4 bars)
+    // Melody + Bass lines? We'll just interleave or simple polyphony later if needed.
+    // Let's do a single monophonic melody line that implies the harmony (Bach cello style?)
+    // actually we can schedule multiple notes.
+
+    const sequence = [
+      // Bar 1: G Major ish
+      { f: G4, d: 2 }, { f: B4, d: 2 }, { f: D5, d: 2 }, { f: Eb5, d: 2 },
+      { f: D5, d: 2 }, { f: B4, d: 2 }, { f: G4, d: 2 }, { f: Ab4, d: 2 },
+
+      // Bar 2: Tension
+      { f: B4, d: 2 }, { f: D5, d: 2 }, { f: Eb5, d: 2 }, { f: F5, d: 2 },
+      { f: Eb5, d: 2 }, { f: D5, d: 2 }, { f: C5, d: 2 }, { f: B4, d: 2 },
+
+      // Bar 3: C Minor ish
+      { f: C5, d: 2 }, { f: Eb5, d: 2 }, { f: G5, d: 2 }, { f: F5, d: 2 },
+      { f: Eb5, d: 2 }, { f: D5, d: 2 }, { f: C5, d: 2 }, { f: B4, d: 2 },
+
+      // Bar 4: Resolve to G
+      { f: Ab4, d: 2 }, { f: B4, d: 2 }, { f: D5, d: 2 }, { f: C5, d: 2 },
+      { f: B4, d: 2 }, { f: Ab4, d: 2 }, { f: G4, d: 4 }, // Long G
+    ]
+
     let noteIdx = 0
     let nextNoteTime = ctx.currentTime
+    let bassToggle = true
 
     const scheduler = () => {
-      // Lookahead
+      // Lookahead window
       while (nextNoteTime < ctx.currentTime + 0.1) {
-        // Play note
-        const osc = ctx.createOscillator()
-        osc.type = 'square'
-        osc.frequency.value = notes[noteIdx % notes.length]
 
-        const g = ctx.createGain()
-        g.gain.setValueAtTime(0.05, nextNoteTime)
-        g.gain.exponentialRampToValueAtTime(0.001, nextNoteTime + 0.1) // Short staccato
+        // --- BASS (Oom-pah) ---
+        // Play bass on every 4 steps (quarter note)
+        // Oom (Ratio 1) - Pah (Ratio 1.5 - Fifth)
+        if (noteIdx % 4 === 0) {
+          const bassOsc = ctx.createOscillator()
+          const bassGain = ctx.createGain()
+          bassOsc.type = 'triangle' // Softer bass
+          // Alternating root/fifth: G3 then D3
+          bassOsc.frequency.value = bassToggle ? G3 : D3
+          bassToggle = !bassToggle
 
-        osc.connect(g)
-        g.connect(masterGain)
+          bassGain.gain.setValueAtTime(0.15, nextNoteTime)
+          bassGain.gain.exponentialRampToValueAtTime(0.01, nextNoteTime + 0.3)
 
-        osc.start(nextNoteTime)
-        osc.stop(nextNoteTime + 0.1)
+          bassOsc.connect(bassGain)
+          bassGain.connect(masterGain)
+          bassOsc.start(nextNoteTime)
+          bassOsc.stop(nextNoteTime + 0.3)
+        }
 
-        // Advance
-        nextNoteTime += 0.11 // fast 16ths roughly
-        noteIdx++
+        // --- MELODY ---
+        const note = sequence[Math.floor(noteIdx / 1) % sequence.length] // 1 step = 1 item
+        // Wait, note.d is duration in steps? 
+        // My sequence array is just 16th notes.
+        // Actually, let's keep it simple: strict 1/8th note grid?
+        // Above sequence has 30 items. 
+        // Let's iterate through the array.
+
+        // We only play if it's the start of the note. 
+        // But my array is just "Next note".
+        // Let's just play them sequentially as 8th notes (d=2 16ths).
+
+        if (note) {
+          const osc = ctx.createOscillator()
+          const g = ctx.createGain()
+
+          osc.type = 'sawtooth' // Accordion vibe
+          osc.frequency.value = note.f
+
+          // Envelope
+          const duration = note.d * baseTime // 2 * 0.14 = 0.28s
+          g.gain.setValueAtTime(0.08, nextNoteTime)
+          g.gain.linearRampToValueAtTime(0.06, nextNoteTime + 0.05)
+          g.gain.exponentialRampToValueAtTime(0.001, nextNoteTime + duration) 
+
+          osc.connect(g)
+          g.connect(masterGain)
+
+          osc.start(nextNoteTime)
+          osc.stop(nextNoteTime + duration)
+
+          // Advance time
+          nextNoteTime += duration
+          noteIdx++
+        }
       }
-      // Keep loop running if enabled (we rely on master gain to mute, but loop keeps scheduling)
-      // Ideally we stop scheduling if disabled to save CPU, but react effect re-mounts on enable toggle? 
-      // No, props change. Let's keep it simple: relying on Master Gain mute.
       requestAnimationFrame(scheduler)
     }
     requestAnimationFrame(scheduler)
