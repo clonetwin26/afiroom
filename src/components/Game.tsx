@@ -8,7 +8,7 @@ import * as THREE from 'three'
 const Grass = () => {
   const texture = useTexture('textures/furniture_fabric_1768925469911.png')
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
-  texture.repeat.set(500, 500)
+  texture.repeat.set(50, 50)
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>

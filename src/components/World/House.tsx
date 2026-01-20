@@ -2,8 +2,9 @@ import { Plane, useTexture } from '@react-three/drei'
 import { Furniture } from './Furniture'
 import { useGameStore } from '../../store/gameStore'
 import * as THREE from 'three'
+import { memo } from 'react'
 
-const WallWithDoor = ({ position, rotation, texture, color }: { position: [number, number, number], rotation: [number, number, number], texture: THREE.Texture, color: string }) => {
+const WallWithDoor = memo(({ position, rotation, texture, color }: { position: [number, number, number], rotation: [number, number, number], texture: THREE.Texture, color: string }) => {
   // Nudge wall inward slightly to avoid overlap
   return (
     <group position={position} rotation={rotation}>
@@ -22,24 +23,9 @@ const WallWithDoor = ({ position, rotation, texture, color }: { position: [numbe
       </Plane>
     </group>
   )
-}
+})
 
-const Room = ({ position, type, color }: { position: [number, number, number], type: string, color: string }) => {
-  // Load room textures (using existing for now as placeholders for new types to avoid error until generated)
-  const textures = useTexture({
-    wood: 'textures/floor_wood_1768925349740.png',
-    tile: 'textures/floor_tile_1768925365399.png',
-    wallpaper: 'textures/wall_wallpaper_1768925379995.png'
-  })
-
-  textures.wood.wrapS = textures.wood.wrapT = THREE.RepeatWrapping
-  textures.tile.wrapS = textures.tile.wrapT = THREE.RepeatWrapping
-  textures.wallpaper.wrapS = textures.wallpaper.wrapT = THREE.RepeatWrapping
-
-  textures.wood.repeat.set(4, 4)
-  textures.tile.repeat.set(4, 4)
-  textures.wallpaper.repeat.set(4, 2)
-
+const Room = memo(({ position, type, color, textures }: { position: [number, number, number], type: string, color: string, textures: any }) => {
   const isTiled = type === 'kitchen' || type === 'bathroom'
   // Special floors for new types if we had them
 
@@ -54,11 +40,6 @@ const Room = ({ position, type, color }: { position: [number, number, number], t
         <meshStandardMaterial color="#ddd" side={THREE.DoubleSide} />
       </Plane>
 
-      {/* Room Light REMOVED for performance */}
-      {/* <pointLight position={[0, 3.8, 0]} intensity={1.2} distance={20} decay={1.5} color="#fffcf5" /> */}
-
-      {/* Walls with Doorways */}
-
       {/* Walls with Doorways */}
       {/* Using 4.98 offset to stay just inside 5.0 line to avoid z-fighting */}
       <WallWithDoor position={[0, 0, -4.98]} rotation={[0, 0, 0]} texture={textures.wallpaper} color={color} />
@@ -67,15 +48,22 @@ const Room = ({ position, type, color }: { position: [number, number, number], t
       <WallWithDoor position={[4.98, 0, 0]} rotation={[0, -Math.PI / 2, 0]} texture={textures.wallpaper} color={color} />
     </group>
   )
-}
+})
 
-const Roof = () => {
+const Roof = memo(() => {
   // Calculate bounding box of the house
   const gridSize = useGameStore(state => state.gridSize)
   const size = gridSize * 10
 
+  // Calculate bounding box center
+  const spacing = 10
+  const centerIndex = Math.floor(gridSize / 2)
+  const minX = (0 - centerIndex) * spacing - 5
+  const maxX = (gridSize - 1 - centerIndex) * spacing + 5
+  const centerPos = (minX + maxX) / 2
+
   return (
-    <group position={[0, 10, 0]}>
+    <group position={[centerPos, 10, centerPos]}>
       {/* 
         Simple Pyramid Roof 
         Height: 6 units
@@ -88,11 +76,37 @@ const Roof = () => {
       </mesh>
     </group>
   )
-}
+})
 
 export const House = () => {
   const rooms = useGameStore(state => state.rooms)
   const furniture = useGameStore(state => state.furniture)
+
+  // Load all textures centrally
+  const textures = useTexture({
+    wood: 'textures/wood_floor_texture_new.png',
+    tile: 'textures/floor_tile_1768925365399.png',
+    wallpaper: 'textures/wall_wallpaper_1768925379995.png',
+    furnitureWood: 'textures/furniture_wood_1768925398400.png',
+    furnitureFabric: 'textures/furniture_fabric_1768925469911.png',
+    furnitureMetal: 'textures/metal_texture_1768925485596.png'
+  })
+
+  // Configure textures once
+  textures.wood.wrapS = textures.wood.wrapT = THREE.RepeatWrapping
+  textures.tile.wrapS = textures.tile.wrapT = THREE.RepeatWrapping
+  textures.wallpaper.wrapS = textures.wallpaper.wrapT = THREE.RepeatWrapping
+
+  textures.wood.repeat.set(4, 4)
+  textures.tile.repeat.set(4, 4)
+  textures.wallpaper.repeat.set(4, 2)
+
+  // Map for furniture
+  const furnitureTextures = {
+    wood: textures.furnitureWood,
+    fabric: textures.furnitureFabric,
+    metal: textures.furnitureMetal
+  }
 
   if (!rooms || rooms.length === 0) return null
 
@@ -100,10 +114,10 @@ export const House = () => {
     <group>
       <Roof />
       {rooms.map(room => (
-        <Room key={room.id} position={room.position} type={room.type} color={room.color} />
+        <Room key={room.id} position={room.position} type={room.type} color={room.color} textures={textures} />
       ))}
       {furniture.map(item => (
-        <Furniture key={item.id} item={item} />
+        <Furniture key={item.id} item={item} textures={furnitureTextures} />
       ))}
     </group>
   )

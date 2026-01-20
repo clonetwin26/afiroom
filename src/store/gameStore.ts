@@ -106,8 +106,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       switch (room.type) {
         case 'living':
-          addFurn('couch', 0, -2)
-          addFurn('tv', 0, 3, Math.PI)
+          addFurn('couch', 0, -3) // Back wall
+          addFurn('tv', 0, 3.5, Math.PI) // Front wall
           addFurn('table', 0, 0)
           addFurn('lamp', -3.5, 3.5)
           addFurn('plant', 3.5, 3.5)
@@ -115,30 +115,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
           break
         case 'dining':
           addFurn('table', 0, 0)
+          // Chairs tuck in
           addFurn('chair', -1, 0, Math.PI / 2)
           addFurn('chair', 1, 0, -Math.PI / 2)
           addFurn('chair', 0, -1, 0)
           addFurn('chair', 0, 1, Math.PI)
           addFurn('cabinet', 0, 3.5, Math.PI)
-          addFurn('safe', 3, 3, Math.PI) // The Safe
+          addFurn('safe', 3.5, 3.5, Math.PI) // The Safe
           break
         case 'bedroom':
         case 'guest_room':
-          addFurn('bed', 0, -2)
-          addFurn('lamp', 2, -3)
-          addFurn('cabinet', -3, 0, Math.PI / 2)
-          addFurn('plant', 3, 2)
+          addFurn('bed', 0, -2.5) // Moved back
+          addFurn('lamp', 3, -3) // Corner
+          addFurn('cabinet', -3.5, 0, Math.PI / 2) // Side wall
+          addFurn('plant', 3.5, 2)
           break
         case 'kitchen':
-          addFurn('fridge', 3, 3, Math.PI)
+          addFurn('fridge', 3.5, 3.5, Math.PI) // Corner
           addFurn('table', 0, 0)
-          addFurn('cabinet', -3, 3, Math.PI / 2)
-          addFurn('washer', -3, -3, Math.PI / 2)
+          addFurn('cabinet', -3.5, 3.5, Math.PI / 2)
+          addFurn('washer', -3.5, -3.5, Math.PI / 2)
           break
         case 'bathroom':
-          addFurn('toilet', 0, 3, Math.PI)
-          addFurn('cabinet', 3, 0, -Math.PI / 2)
-          addFurn('plant', -3, 3)
+          addFurn('toilet', 0, 3.5, Math.PI) // Back wall
+          addFurn('cabinet', 3.5, 0, -Math.PI / 2) // Side wall
+          addFurn('plant', -3.5, 3.5) // Corner
           break
         case 'office':
           addFurn('desk', 0, 2, Math.PI)
@@ -206,8 +207,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     )
 
     // Clamp total pieces to available items
-    const { totalPuzzlePieces } = get()
-    const finalCount = Math.min(totalPuzzlePieces, searchableItems.length)
+    const { totalPuzzlePieces: requestedPieces } = get()
+    // Ensure at least 1 piece if possible, but max is requested
+    const finalCount = Math.min(requestedPieces, searchableItems.length)
+
+    // If we have 0 searchable items (rare), we can't play properly.
+    // Force at least 1 piece to be spawned if 0? No, just handle 0.
+
+    // Update store with ACTUAL total
+    set({ totalPuzzlePieces: finalCount })
 
     const shuffled = [...searchableItems].sort(() => 0.5 - Math.random())
     const selected = shuffled.slice(0, finalCount)
@@ -222,6 +230,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameState: 'playing',
       secretCode: code,
       puzzlePiecesFound: 0,
+      totalPuzzlePieces: finalCount, // Vital update
       hasKey: false,
       hiddenPieces: hiddenMap,
       foundLocations: {},

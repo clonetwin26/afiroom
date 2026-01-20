@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Cylinder, Sphere, useTexture, Text, Ring } from '@react-three/drei'
+import { Box, Cylinder, Sphere, Text, Ring } from '@react-three/drei'
 import { useGameStore } from '../../store/gameStore'
 import type { FurnitureItem } from '../../types'
 import { Interactable } from './Interactable'
@@ -7,13 +7,7 @@ import { useThree } from '@react-three/fiber'
 import { Confetti } from '../FX/Confetti'
 import * as THREE from 'three'
 
-const Model = ({ type, color }: { type: FurnitureItem['type'], color?: string }) => {
-  const textures = useTexture({
-    wood: 'textures/furniture_wood_1768925398400.png',
-    fabric: 'textures/furniture_fabric_1768925469911.png',
-    metal: 'textures/metal_texture_1768925485596.png'
-  })
-
+const Model = ({ type, color, textures }: { type: FurnitureItem['type'], color?: string, textures: any }) => {
   // Materials
   const woodMat = <meshStandardMaterial map={textures.wood} />
   const fabricMat = <meshStandardMaterial map={textures.fabric} color={color || "white"} />
@@ -199,7 +193,7 @@ const Model = ({ type, color }: { type: FurnitureItem['type'], color?: string })
   }
 }
 
-export const Furniture = ({ item }: { item: FurnitureItem }) => {
+export const Furniture = ({ item, textures }: { item: FurnitureItem, textures: any }) => {
   const searchLocation = useGameStore(state => state.searchLocation)
   const setGameState = useGameStore(state => state.setGameState)
   const foundLocations = useGameStore(state => state.foundLocations)
@@ -242,7 +236,7 @@ export const Furniture = ({ item }: { item: FurnitureItem }) => {
     <group position={item.position} rotation={item.rotation}>
       <Interactable onClick={handleInteraction}>
         <group onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)}>
-          <Model type={item.type} color={item.color} />
+          <Model type={item.type} color={item.color} textures={textures} />
 
           {/* Highlight Ring on Floor */}
           {hovered && isSearchable && !isSearched && (

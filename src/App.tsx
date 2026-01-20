@@ -7,19 +7,26 @@ import { BackgroundMusic } from './components/FX/BackgroundMusic'
 import { SoundEffects } from './components/FX/SoundEffects'
 import { useGameStore } from './store/gameStore'
 
+import { Loader } from '@react-three/drei'
+import { Suspense } from 'react'
+import { ErrorBoundary } from './components/ErrorBoundary'
+
 function App() {
   const isMusicEnabled = useGameStore(state => state.isMusicEnabled)
 
   return (
-    <>
-      <BackgroundMusic enabled={isMusicEnabled} />
-      <SoundEffects enabled={isMusicEnabled} />
-      <Canvas shadows camera={{ position: [0, 2, 5], fov: 75 }}>
-        <Setup />
-        <Game />
-      </Canvas>
-      <UI />
-    </>
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <BackgroundMusic enabled={isMusicEnabled} />
+        <SoundEffects enabled={isMusicEnabled} />
+        <Canvas shadows camera={{ position: [0, 2, 5], fov: 75 }}>
+          <Setup />
+          <Game />
+        </Canvas>
+        <UI />
+      </Suspense>
+      <Loader />
+    </ErrorBoundary>
   )
 }
 

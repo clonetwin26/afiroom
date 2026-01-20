@@ -54,14 +54,17 @@ export const Player = () => {
 
   const checkCollision = (pos: Vector3) => {
     // 1. Map Boundaries
-    // Rooms are 10x10.
-    // Center of grid is 0,0.
-    // Range is -(gridSize * 10)/2 to (gridSize * 10)/2
-    // e.g. Size 5 => 50 units total. Range -25 to 25.
-    const mapSize = useGameStore.getState().gridSize * 10
-    const limit = (mapSize / 2) - 0.5 // Keep slightly inside
+    const { gridSize } = useGameStore.getState()
+    const spacing = 10
+    const centerIndex = Math.floor(gridSize / 2)
 
-    if (Math.abs(pos.x) > limit || Math.abs(pos.z) > limit) return true
+    // Calculate actual bounds of the generated rooms
+    const minX = (0 - centerIndex) * spacing - 5 + 0.5
+    const maxX = (gridSize - 1 - centerIndex) * spacing + 5 - 0.5
+    const minZ = minX // Square grid
+    const maxZ = maxX
+
+    if (pos.x < minX || pos.x > maxX || pos.z < minZ || pos.z > maxZ) return true
 
     // 2. Interior Walls
     // Rooms are centered at 0, 10, -10, etc.

@@ -3,7 +3,11 @@ import { useEffect, useRef } from 'react'
 export const BackgroundMusic = ({ enabled }: { enabled: boolean }) => {
   const audioCtx = useRef<AudioContext | null>(null)
   const gainNode = useRef<GainNode | null>(null)
-  const oscillators = useRef<OscillatorNode[]>([])
+
+
+  // Ref to track current enabled state for initAudio
+  const enabledRef = useRef(enabled)
+  useEffect(() => { enabledRef.current = enabled }, [enabled])
 
   const initAudio = () => {
     if (audioCtx.current) return
@@ -15,7 +19,8 @@ export const BackgroundMusic = ({ enabled }: { enabled: boolean }) => {
     // Master Gain
     const masterGain = ctx.createGain()
     masterGain.connect(ctx.destination)
-    masterGain.gain.value = enabled ? 0.3 : 0
+    // Use current ref value, not stale prop closure
+    masterGain.gain.value = enabledRef.current ? 0.3 : 0
     gainNode.current = masterGain
 
     // Phoenix Wright Investigation Style
@@ -23,23 +28,8 @@ export const BackgroundMusic = ({ enabled }: { enabled: boolean }) => {
     // Base tempo: ~135 BPM
 
     // Bass Pulse (16th notes)
-    const bassOsc = ctx.createOscillator()
-    bassOsc.type = 'sawtooth'
-    bassOsc.frequency.value = 110 // A2
+    // Bass Pulse REMOVED
 
-    const bassFilter = ctx.createBiquadFilter()
-    bassFilter.type = 'lowpass'
-    bassFilter.frequency.value = 400
-
-    const bassGain = ctx.createGain()
-    bassGain.gain.value = 0.1
-
-    // connect
-    bassOsc.connect(bassFilter)
-    bassFilter.connect(bassGain)
-    bassGain.connect(masterGain)
-    bassOsc.start()
-    oscillators.current.push(bassOsc)
 
     // Arpeggiator Loop
     // Notes: A minor pentatonic ish (A, C, D, E, G)

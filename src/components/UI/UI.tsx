@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGameStore } from '../../store/gameStore'
 import { Joystick } from './Joystick'
-// unused import removed
+import { TouchLook } from './TouchLook'
 
 export const UI = () => {
   const gameState = useGameStore(state => state.gameState)
@@ -93,8 +93,8 @@ export const UI = () => {
               <label>House Size: {size}x{size}</label>
               <input
                 type="range"
-                min="3"
-                max="10"
+                min="2"
+                max="5"
                 value={size}
                 onChange={(e) => setSize(parseInt(e.target.value))}
               />
@@ -180,6 +180,9 @@ export const UI = () => {
           {/* Virtual Joystick (Bottom Left) */}
           <div style={{ pointerEvents: 'auto' }}>
             <Joystick onMove={(x, y) => setJoystickInput({ x, y })} />
+          </div>
+          <div style={{ pointerEvents: 'auto' }}>
+            <TouchLook />
           </div>
 
           {showHelp && (
