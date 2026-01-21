@@ -172,7 +172,7 @@ export const PuzzleBoard = () => {
         {isAllFound ? 'Close & Go To Safe' : 'Back to Search'}
       </button>
 
-      {isAllFound && <div style={{ position: 'absolute', bottom: '20px', color: '#aaa' }}>Arranging the pieces is purely for your satisfaction!</div>}
+
     </div>
   )
 }

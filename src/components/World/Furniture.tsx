@@ -129,8 +129,11 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
     case 'monitor':
       return (
         <group>
-          <Box args={[1, 0.6, 0.1]} position={[0, 1.3, 0]}><meshStandardMaterial color="black" /></Box>
-          <Cylinder args={[0.1, 0.1, 0.3]} position={[0, 1, 0]}>{darkMat}</Cylinder>
+          {/* Base at 0. Stand height 0.3. Screen height 0.6. */}
+          {/* Stand: center y=0.15 */}
+          <Cylinder args={[0.1, 0.1, 0.3]} position={[0, 0.15, 0]}>{darkMat}</Cylinder>
+          {/* Screen: center y=0.3 (stand top) + 0.3 (half screen) = 0.6. */}
+          <Box args={[1, 0.6, 0.1]} position={[0, 0.6, 0]}><meshStandardMaterial color="black" /></Box>
         </group>
       )
     case 'treadmill':
@@ -199,11 +202,35 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
         paintingTex = textures.paintingPassover
         frameColor = '#FFD700' // Gold
       } else if (variant === 'western_wall') {
-        paintingTex = textures.paintingPassover
+        paintingTex = textures.paintingWall
         frameColor = '#C0C0C0' // Silver
       } else if (variant === 'shabbat') {
         paintingTex = textures.paintingShabbat
         frameColor = '#C0C0C0' // Silver
+      } else if (variant === 'menorah') {
+        paintingTex = textures.paintingMenorah
+        frameColor = '#DAA520' // Goldenrod
+      } else if (variant === 'star') {
+        paintingTex = textures.paintingStar
+        frameColor = '#000080' // Navy
+      } else if (variant === 'red_sea') {
+        paintingTex = textures.paintingRedSea
+        frameColor = '#4682B4' // Steel Blue
+      } else if (variant === 'sinai') {
+        paintingTex = textures.paintingSinai
+        frameColor = '#A52A2A' // Brown
+      } else if (variant === 'dove') {
+        paintingTex = textures.paintingDove
+        frameColor = '#C0C0C0' // Silver
+      } else if (variant === 'matzah') {
+        paintingTex = textures.paintingMatzah
+        frameColor = '#DAA520' // Goldenrod
+      } else if (variant === 'pom') {
+        paintingTex = textures.paintingPom
+        frameColor = '#DC143C' // Crimson
+      } else if (variant === 'cup') {
+        paintingTex = textures.paintingCup
+        frameColor = '#4B0082' // Indigo
       }
 
       return (
@@ -273,7 +300,7 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
       )
     case 'microscope':
       return (
-        <group position={[0, 1, 0]}>
+        <group position={[0, 0, 0]}>
           <Box args={[0.2, 0.4, 0.2]} position={[0, 0.2, 0]}>{metalMat}</Box>
           <Cylinder args={[0.05, 0.05, 0.3]} position={[0, 0.3, 0.1]} rotation={[0.5, 0, 0]}><meshStandardMaterial color="black" /></Cylinder>
         </group>
@@ -390,18 +417,28 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
     case 'drill_press':
       return (
         <group>
+          {/* Base on Floor */}
+          <Box args={[0.6, 0.1, 0.8]} position={[0, 0.05, 0]}><meshStandardMaterial color="gray" /></Box>
+          {/* Column */}
+          <Cylinder args={[0.08, 0.08, 1.8]} position={[0, 0.9, -0.3]}><meshStandardMaterial color="silver" /></Cylinder>
+          {/* Table */}
           <Box args={[0.5, 0.1, 0.5]} position={[0, 1, 0]}><meshStandardMaterial color="gray" /></Box>
-          <Cylinder args={[0.05, 0.05, 1]} position={[0, 1.5, -0.2]}><meshStandardMaterial color="gray" /></Cylinder>
-          <Box args={[0.3, 0.5, 0.4]} position={[0, 2, -0.1]}><meshStandardMaterial color="teal" /></Box>
-          <Cylinder args={[0.02, 0.02, 0.4]} position={[0, 1.6, 0]}><meshStandardMaterial color="silver" /></Cylinder>
+          {/* Head */}
+          <Box args={[0.3, 0.5, 0.6]} position={[0, 1.8, -0.1]}><meshStandardMaterial color="teal" /></Box>
+          <Cylinder args={[0.02, 0.02, 0.4]} position={[0, 1.4, 0]}><meshStandardMaterial color="silver" /></Cylinder>
         </group>
       )
     case 'saw':
       return (
         <group>
-          <Box args={[0.8, 0.1, 0.8]} position={[0, 1, 0]}><meshStandardMaterial color="gray" /></Box>
+          {/* Cabinet Base */}
+          <Box args={[1, 0.9, 1]} position={[0, 0.45, 0]}><meshStandardMaterial color="gray" /></Box>
+          {/* Table Top */}
+          <Box args={[1.2, 0.05, 1.2]} position={[0, 0.925, 0]}><meshStandardMaterial color="silver" metalness={0.5} /></Box>
           {/* Blade */}
-          <Cylinder args={[0.25, 0.25, 0.02]} position={[0, 1.15, 0]} rotation={[0, 0, Math.PI / 2]}><meshStandardMaterial color="silver" metalness={1} /></Cylinder>
+          <Cylinder args={[0.25, 0.25, 0.02]} position={[0, 1.05, 0]} rotation={[0, 0, Math.PI / 2]}><meshStandardMaterial color="silver" metalness={1} /></Cylinder>
+          {/* Fence */}
+          <Box args={[0.1, 0.1, 1.2]} position={[0.4, 1.0, 0]}><meshStandardMaterial color="black" /></Box>
         </group>
       )
     case 'menorah':
@@ -436,8 +473,8 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
       return (
         <group>
           <Box args={[3, 0.5, 3]} position={[0, 0.25, 0]}><meshStandardMaterial map={textures.tile} /></Box>
-          {/* Water */}
-          <Box args={[2.6, 0.4, 2.6]} position={[0, 0.3, 0]}><meshStandardMaterial color="#00aaff" transparent opacity={0.6} /></Box>
+          {/* Water - Lowered to 0.48 top to prevent z-fighting with 0.5 rim */}
+          <Box args={[2.6, 0.4, 2.6]} position={[0, 0.28, 0]}><meshStandardMaterial color="#00aaff" transparent opacity={0.6} /></Box>
           {/* Steps */}
           <Box args={[0.5, 0.2, 0.5]} position={[1, 0.35, 1]}><meshStandardMaterial map={textures.tile} /></Box>
           <Box args={[0.5, 0.4, 0.5]} position={[1.5, 0.35, 1]}><meshStandardMaterial map={textures.tile} /></Box>

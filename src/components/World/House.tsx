@@ -180,7 +180,260 @@ export const House = () => {
     return new THREE.CanvasTexture(canvas)
   }
 
+  const createMenorahTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Background - Dark
+    ctx.fillStyle = '#101020'; ctx.fillRect(0, 0, 512, 512);
+
+    // Base
+    ctx.fillStyle = '#ffd700'; // Gold
+    ctx.fillRect(240, 400, 32, 50);
+    ctx.beginPath(); ctx.moveTo(200, 450); ctx.lineTo(312, 450); ctx.lineTo(256, 400); ctx.fill();
+
+    // Stem
+    ctx.fillRect(250, 200, 12, 200);
+
+    // Branches (Curved)
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+    // 3 pairs
+    for (let i = 1; i <= 3; i++) {
+      const w = 60 * i;
+      const h = 200 - (i * 20);
+      ctx.beginPath();
+      ctx.moveTo(256 - w, h);
+      ctx.quadraticCurveTo(256 - w, 300, 256, 300);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(256 + w, h);
+      ctx.quadraticCurveTo(256 + w, 300, 256, 300);
+      ctx.stroke();
+
+      // Flames for branches
+      ctx.fillStyle = '#ffaa00';
+      ctx.beginPath(); ctx.arc(256 - w, h - 15, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(256 + w, h - 15, 10, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Center Flame
+    ctx.fillStyle = '#ffaa00';
+    ctx.beginPath(); ctx.arc(256, 185, 12, 0, Math.PI * 2); ctx.fill();
+
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createStarTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Background - Israeli Blue/White flag style
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 512, 512); // White
+    ctx.fillStyle = '#0038b8'; // Blue
+    ctx.fillRect(0, 50, 512, 60); // Top Stripe
+    ctx.fillRect(0, 402, 512, 60); // Bottom Stripe
+
+    // Star of David
+    ctx.strokeStyle = '#0038b8'; ctx.lineWidth = 15;
+    const cx = 256, cy = 256, r = 100;
+
+    // Triangle 1
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + r * 0.866, cy + r * 0.5);
+    ctx.lineTo(cx - r * 0.866, cy + r * 0.5);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Triangle 2
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + r);
+    ctx.lineTo(cx + r * 0.866, cy - r * 0.5);
+    ctx.lineTo(cx - r * 0.866, cy - r * 0.5);
+    ctx.closePath();
+    ctx.stroke();
+
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createWesternWallTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Sky
+    ctx.fillStyle = '#87ceeb'; ctx.fillRect(0, 0, 512, 200);
+
+    // Wall Stones
+    ctx.fillStyle = '#e0cda8'; ctx.fillRect(0, 200, 512, 312); // Base
+
+    // Stones pattern
+    ctx.strokeStyle = '#c0b090'; ctx.lineWidth = 2;
+    for (let y = 200; y < 512; y += 40) {
+      let offset = (y % 80 === 0) ? 0 : 20;
+      for (let x = -20; x < 512; x += 60) {
+        ctx.strokeRect(x + offset, y, 60, 40);
+        // Random stone shading
+        if (Math.random() > 0.5) {
+          ctx.fillStyle = 'rgba(0,0,0,0.05)';
+          ctx.fillRect(x + offset + 2, y + 2, 56, 36);
+        }
+      }
+    }
+
+    // Greenery
+    ctx.fillStyle = '#228b22';
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * 512, 200 + Math.random() * 200, 10 + Math.random() * 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createRedSeaTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Sand path
+    ctx.fillStyle = '#f0e68c'; ctx.fillRect(200, 0, 112, 512);
+
+    // Water Walls
+    ctx.fillStyle = '#00008b'; // Dark blue
+    ctx.fillRect(0, 0, 200, 512); // Left
+    ctx.fillRect(312, 0, 200, 512); // Right
+
+    // Waves/Foam
+    ctx.strokeStyle = '#40e0d0'; ctx.lineWidth = 5;
+    for (let i = 0; i < 20; i++) {
+      const y = Math.random() * 512;
+      // Left waves
+      ctx.beginPath(); ctx.moveTo(150, y); ctx.quadraticCurveTo(175, y - 20, 200, y); ctx.stroke();
+      // Right waves
+      ctx.beginPath(); ctx.moveTo(312, y); ctx.quadraticCurveTo(337, y - 20, 362, y); ctx.stroke();
+    }
+
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createSinaiTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    // Sky
+    ctx.fillStyle = '#191970'; ctx.fillRect(0, 0, 512, 512); // Midnight blue
+    // Mountain
+    ctx.fillStyle = '#2f4f4f';
+    ctx.beginPath(); ctx.moveTo(0, 512); ctx.lineTo(256, 100); ctx.lineTo(512, 512); ctx.fill();
+    // Tablets at top?
+    ctx.fillStyle = '#deb887';
+    ctx.fillRect(230, 80, 20, 30); ctx.fillRect(260, 80, 20, 30);
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createDoveTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.fillStyle = '#87ceeb'; ctx.fillRect(0, 0, 512, 512); // Sky blue
+    // Dove (Simple white shape)
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(256, 256, 60, 0, Math.PI * 2); ctx.fill(); // Body
+    ctx.beginPath(); ctx.moveTo(250, 250); ctx.lineTo(150, 200); ctx.lineTo(200, 300); ctx.fill(); // Wing
+    ctx.beginPath(); ctx.arc(300, 240, 30, 0, Math.PI * 2); ctx.fill(); // Head
+    // Olive branch
+    ctx.strokeStyle = 'green'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(320, 250); ctx.lineTo(400, 280); ctx.stroke();
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createMatzahTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.fillStyle = '#f5deb3'; ctx.fillRect(0, 0, 512, 512); // Wheat
+    // Burn marks
+    ctx.fillStyle = '#8b4513';
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * 512; const y = Math.random() * 512;
+      ctx.beginPath(); ctx.arc(x, y, 2 + Math.random() * 4, 0, Math.PI * 2); ctx.fill();
+    }
+    // Lines
+    ctx.strokeStyle = '#d2b48c'; ctx.lineWidth = 2;
+    for (let i = 0; i < 512; i += 20) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
+    }
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createPomegranateTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.fillStyle = '#f0e68c'; ctx.fillRect(0, 0, 512, 512); // Background
+    // Pomegranates
+    ctx.fillStyle = '#dc143c';
+    for (let i = 0; i < 5; i++) {
+      const cx = 100 + Math.random() * 300;
+      const cy = 100 + Math.random() * 300;
+      ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI * 2); ctx.fill();
+      // Crown
+      ctx.beginPath(); ctx.moveTo(cx - 10, cy - 45); ctx.lineTo(cx, cy - 60); ctx.lineTo(cx + 10, cy - 45); ctx.fill();
+    }
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const createCupTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.fillStyle = '#4b0082'; ctx.fillRect(0, 0, 512, 512); // Indigo
+    // Cup
+    ctx.fillStyle = 'silver';
+    ctx.beginPath();
+    ctx.moveTo(200, 400); ctx.lineTo(312, 400); // Base
+    ctx.lineTo(280, 300); ctx.lineTo(280, 200); // Stem
+    ctx.lineTo(350, 100); ctx.lineTo(162, 100); // Bow
+    ctx.lineTo(232, 200); ctx.lineTo(232, 300);
+    ctx.lineTo(200, 400);
+    ctx.fill();
+    return new THREE.CanvasTexture(canvas)
+  }
+
   const shabbatTexture = useMemo(() => createShabbatTexture(), [])
+  const menorahTexture = useMemo(() => createMenorahTexture(), [])
+  const starTexture = useMemo(() => createStarTexture(), [])
+  const wallTexture = useMemo(() => createWesternWallTexture(), [])
+  const redSeaTexture = useMemo(() => createRedSeaTexture(), [])
+  const sinaiTexture = useMemo(() => createSinaiTexture(), [])
+  const doveTexture = useMemo(() => createDoveTexture(), [])
+  const matzahTexture = useMemo(() => createMatzahTexture(), [])
+  const pomTexture = useMemo(() => createPomegranateTexture(), [])
+  const cupTexture = useMemo(() => createCupTexture(), [])
 
   const furnitureTextures = {
     wood: textures.furnitureWood,
@@ -191,7 +444,16 @@ export const House = () => {
     metal: textures.furnitureMetal,
     painting: textures.painting,
     paintingPassover: textures.paintingPassover,
-    paintingShabbat: shabbatTexture || textures.paintingPassover, // Fallback
+    paintingShabbat: shabbatTexture || textures.paintingPassover,
+    paintingMenorah: menorahTexture || textures.paintingPassover,
+    paintingStar: starTexture || textures.paintingPassover,
+    paintingWall: wallTexture || textures.paintingPassover,
+    paintingRedSea: redSeaTexture || textures.paintingPassover,
+    paintingSinai: sinaiTexture || textures.paintingPassover,
+    paintingDove: doveTexture || textures.paintingPassover,
+    paintingMatzah: matzahTexture || textures.paintingPassover,
+    paintingPom: pomTexture || textures.paintingPassover,
+    paintingCup: cupTexture || textures.paintingPassover,
     rug: textures.rug,
     books: textures.books
   }

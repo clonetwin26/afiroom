@@ -22,6 +22,7 @@ export interface GameStore {
   secretCode: string
   puzzlePiecesFound: number
   totalPuzzlePieces: number
+  targetPuzzlePieces: number
   hasKey: boolean
   gridSize: number
   joystickInput: { x: number, y: number }
