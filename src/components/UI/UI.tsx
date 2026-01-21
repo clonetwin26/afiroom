@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useGameStore } from '../../store/gameStore'
 import { Joystick } from './Joystick'
 import { TouchControls } from './TouchControls'
+import { PuzzleBoard } from '../Puzzle/PuzzleBoard'
 
 export const UI = () => {
   const gameState = useGameStore(state => state.gameState)
@@ -23,9 +24,13 @@ export const UI = () => {
 
   useEffect(() => {
     if (puzzlePiecesFound > 0) {
-      showNotification('Puzzle Piece Found!')
+      if (puzzlePiecesFound === totalPuzzlePieces) {
+        setGameState('puzzle_assembly')
+      } else {
+        showNotification('Puzzle Piece Found!')
+      }
     }
-  }, [puzzlePiecesFound])
+  }, [puzzlePiecesFound, totalPuzzlePieces, setGameState, showNotification])
 
   const handleStart = () => {
     setGridSize(size)
@@ -54,6 +59,25 @@ export const UI = () => {
       }}
     >
       {isMusicEnabled ? '🔊' : '🔇'}
+    </button>
+  )
+
+  const PuzzleButton = () => (
+    <button
+      onClick={() => setGameState(gameState === 'puzzle_assembly' ? 'playing' : 'puzzle_assembly')}
+      style={{
+        position: 'absolute', top: '20px', right: '80px',
+        width: '60px', height: '60px', cursor: 'pointer', zIndex: 2000,
+        background: 'rgba(0,0,0,0.5)', border: '2px solid white', borderRadius: '10px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'white', fontWeight: 'bold', fontSize: '18px'
+      }}
+    >
+      {/* Simple Puzzle Piece SVG */}
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute' }}>
+        <path d="M20.5 6c-2.61.7-2.61 4.6 0 5.3a4.5 4.5 0 0 0-4 4.5c.7 2.61-2.9 6.2-5.5 3.5a4.5 4.5 0 0 0-4.5 0c-2.61 2.61-6.2-1.29-3.5-4a4.5 4.5 0 0 0 0-4.5c-2.61-2.61 1.29-6.2 4-3.5a4.5 4.5 0 0 0 4.5 0c2.61-2.61 6.2 1.29 3.5 4a4.5 4.5 0 0 0 5.5-5.3z" fill="#4CAF50" stroke="white" strokeWidth="1" />
+      </svg>
+      <span style={{ zIndex: 1, textShadow: '0 0 2px black' }}>{puzzlePiecesFound}</span>
     </button>
   )
 
@@ -104,6 +128,7 @@ export const UI = () => {
   return (
     <>
       <MusicButton />
+      {gameState !== 'intro' && gameState !== 'won' && <PuzzleButton />}
 
 
       {gameState === 'intro' && (
@@ -345,6 +370,7 @@ export const UI = () => {
           <button onClick={() => setGameState('intro')} style={{ padding: '20px 40px', fontSize: '24px', marginTop: '30px', cursor: 'pointer' }}>Play Again</button>
         </div>
       )}
+      {(gameState === 'puzzle_assembly' || gameState === 'unlocked') && <PuzzleBoard />}
     </>
   )
 }

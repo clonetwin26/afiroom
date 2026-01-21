@@ -131,6 +131,57 @@ export const House = () => {
   textures.woodOak.repeat.set(2, 2)
   textures.woodRustic.repeat.set(2, 2)
 
+
+  const createShabbatTexture = () => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512
+    canvas.height = 512
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Background - Dark Blue/Warm
+    const grad = ctx.createLinearGradient(0, 0, 0, 512)
+    grad.addColorStop(0, '#1a0b00')
+    grad.addColorStop(1, '#4a2c00')
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, 512, 512)
+
+    // Table
+    ctx.fillStyle = '#8b4513'
+    ctx.fillRect(50, 400, 412, 112)
+
+    // Candles (Left)
+    ctx.fillStyle = '#silver'
+    ctx.fillRect(150, 300, 40, 100) // Stick
+    ctx.fillStyle = 'rgba(255, 255, 0, 0.8)' // Flame glow
+    ctx.beginPath(); ctx.arc(170, 280, 25, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = '#fff' // Flame Core
+    ctx.beginPath(); ctx.arc(170, 285, 10, 0, Math.PI * 2); ctx.fill()
+
+    // Candles (Right)
+    ctx.fillStyle = '#silver'
+    ctx.fillRect(320, 300, 40, 100) // Stick
+    ctx.fillStyle = 'rgba(255, 255, 0, 0.8)' // Flame glow
+    ctx.beginPath(); ctx.arc(340, 280, 25, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = '#fff' // Flame Core
+    ctx.beginPath(); ctx.arc(340, 285, 10, 0, Math.PI * 2); ctx.fill()
+
+    // Challah (Center)
+    ctx.fillStyle = '#d2691e'
+    ctx.beginPath()
+    ctx.ellipse(255, 410, 80, 40, 0, 0, Math.PI * 2)
+    ctx.fill()
+    // Braids
+    ctx.strokeStyle = '#8b4500'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(190, 410); ctx.quadraticCurveTo(255, 380, 320, 410); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(190, 410); ctx.quadraticCurveTo(255, 440, 320, 410); ctx.stroke();
+
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  const shabbatTexture = useMemo(() => createShabbatTexture(), [])
+
   const furnitureTextures = {
     wood: textures.furnitureWood,
     woodMahogany: textures.woodMahogany,
@@ -140,13 +191,15 @@ export const House = () => {
     metal: textures.furnitureMetal,
     painting: textures.painting,
     paintingPassover: textures.paintingPassover,
+    paintingShabbat: shabbatTexture || textures.paintingPassover, // Fallback
     rug: textures.rug,
     books: textures.books
   }
 
   const floorGeo = useMemo(() => new THREE.PlaneGeometry(10, 10), [])
-  const woodRooms = useMemo(() => rooms.filter((r: any) => r.type !== 'kitchen' && r.type !== 'bathroom'), [rooms])
-  const tileRooms = useMemo(() => rooms.filter((r: any) => r.type === 'kitchen' || r.type === 'bathroom'), [rooms])
+  const tileTypes = ['kitchen', 'bathroom', 'science_lab', 'lab']
+  const tileRooms = useMemo(() => rooms.filter((r: any) => tileTypes.includes(r.type)), [rooms])
+  const woodRooms = useMemo(() => rooms.filter((r: any) => !tileTypes.includes(r.type)), [rooms])
 
   if (!rooms || rooms.length === 0) return null
 

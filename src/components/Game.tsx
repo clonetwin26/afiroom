@@ -33,7 +33,7 @@ const Grass = () => {
   }, [])
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]} receiveShadow>
       <planeGeometry args={[1000, 1000]} />
       <meshStandardMaterial map={texture} roughness={1} />
     </mesh>

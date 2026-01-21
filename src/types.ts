@@ -4,13 +4,13 @@ export type GameState = 'intro' | 'playing' | 'puzzle_assembly' | 'unlocked' | '
 export interface RoomData {
   id: string
   position: [number, number, number]
-  type: 'living' | 'dining' | 'bedroom' | 'kitchen' | 'bathroom' | 'hall' | 'office' | 'gym' | 'library' | 'pantry' | 'garage' | 'guest_room' | 'art_studio' | 'music_room' | 'tech_lab'
+  type: 'living' | 'dining' | 'bedroom' | 'kitchen' | 'bathroom' | 'hall' | 'office' | 'gym' | 'library' | 'pantry' | 'garage' | 'guest_room' | 'art_studio' | 'music_room' | 'tech_lab' | 'game_room' | 'theater' | 'prayer_room' | 'science_lab' | 'nursery' | 'lounge' | 'observatory' | 'sauna' | 'wine_cellar' | 'workshop' | 'mikvah' | 'beit_midrash' | 'sukkah' | 'ballroom' | 'aquarium' | 'trophy_room' | 'bakery'
   color: string
 }
 
 export interface FurnitureItem {
   id: string
-  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture' | 'painting'
+  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture' | 'painting' | 'arcade_game' | 'pool_table' | 'vending_machine' | 'cinema_screen' | 'bimah' | 'lab_bench' | 'microscope' | 'whiteboard' | 'crib' | 'toy_chest' | 'changing_table' | 'bar_counter' | 'stool' | 'jukebox' | 'telescope' | 'sauna_bench' | 'heater' | 'wine_rack' | 'barrel' | 'workbench' | 'drill_press' | 'saw' | 'menorah' | 'seder_plate' | 'mikvah_pool' | 'open_book' | 'torah_scroll' | 'chandelier' | 'fish_tank' | 'trophy_case' | 'baker_rack' | 'oven_industrial'
   position: [number, number, number]
   rotation: [number, number, number]
   color?: string
