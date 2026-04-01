@@ -411,6 +411,33 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
     })
 
+    // --- PLAGUES PROPAGATION ---
+    newRooms.forEach(room => {
+      const [rx, ry, rz] = room.position
+
+      const addPlague = (type: 'frog' | 'locust') => {
+        // Random offset within the 10x10 room [-4, 4]
+        const lx = (Math.random() - 0.5) * 8
+        const lz = (Math.random() - 0.5) * 8
+        const rotY = Math.random() * Math.PI * 2
+
+        newFurniture.push({
+          id: `${room.id}_${type}_${Math.random().toString(36).substr(2, 4)}`,
+          type,
+          position: [rx + lx, ry, rz + lz], // Floor level for now
+          rotation: [0, rotY, 0]
+        })
+      }
+
+      // 2-4 frogs per room
+      const frogCount = 2 + Math.floor(Math.random() * 3)
+      for (let i = 0; i < frogCount; i++) addPlague('frog')
+
+      // 2-4 locusts per room
+      const locustCount = 2 + Math.floor(Math.random() * 3)
+      for (let i = 0; i < locustCount; i++) addPlague('locust')
+    })
+
     // --- POST PROCESSING ---
 
     // 1. Force Safe if not placed (e.g. small grid, random chance missed dining)
@@ -496,7 +523,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       f.type !== 'dumbbell' &&
       f.type !== 'monitor' &&
       f.type !== 'rug' &&
-      f.type !== 'sculpture'
+      f.type !== 'sculpture' &&
+      f.type !== 'frog' &&
+      f.type !== 'locust'
     )
 
     // Clamp total pieces to available items

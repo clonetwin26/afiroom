@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore'
 
 export const Player = () => {
-  const { camera } = useThree()
+  const { camera, gl } = useThree()
   const gameState = useGameStore(state => state.gameState)
 
   const [moveForward, setMoveForward] = useState(false)
@@ -221,7 +221,12 @@ export const Player = () => {
 
   // Global Interaction Handler
   useEffect(() => {
-    const handleInteract = () => {
+    const handleInteract = (e: MouseEvent) => {
+        const target = e.target as HTMLElement
+        if (target && typeof target.closest === 'function') {
+          if (target.closest('button') || target.closest('input') || target.closest('.interactive-ui')) return
+        }
+
         const { hoveredId, gameState, furniture } = useGameStore.getState()
         if (gameState !== 'playing' || !hoveredId) return
         
@@ -237,7 +242,7 @@ export const Player = () => {
         }
 
         // Logic from Furniture.tsx
-        const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug'
+        const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug' && item.type !== 'frog' && item.type !== 'locust'
         
         if (item.type === 'safe') {
             useGameStore.getState().setGameState('safe_interaction')
@@ -251,7 +256,7 @@ export const Player = () => {
     return () => {
       window.removeEventListener('click', handleInteract)
     }
-  }, [camera])
+  }, [camera, gl])
 
   const raycaster = useRef(new THREE.Raycaster())
   const { scene } = useThree()

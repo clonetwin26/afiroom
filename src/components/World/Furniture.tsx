@@ -569,6 +569,53 @@ const Model = ({ type, color, textures, variant }: { type: FurnitureItem['type']
           <Box args={[1.2, 0.05, 0.1]} position={[0, 1.7, 0.6]}><meshStandardMaterial color="black" /></Box>
         </group>
       )
+    case 'frog':
+      return (
+        <group scale={[0.5, 0.5, 0.5]}> {/* Petite scale */}
+          {/* Main Body with organic proportions */}
+          <Sphere args={[0.5, 16, 16]} scale={[1, 0.8, 1.2]} position={[0, 0.3, 0]}><meshStandardMaterial color="#4CAF50" /></Sphere>
+          
+          {/* Googly Eyes */}
+          <group position={[0, 0.6, 0.35]}>
+            <Sphere args={[0.15]} position={[-0.2, 0, 0]}><meshStandardMaterial color="white" /></Sphere>
+            <Sphere args={[0.08]} position={[-0.2, 0.05, 0.1]}><meshStandardMaterial color="black" /></Sphere>
+            
+            <Sphere args={[0.15]} position={[0.2, 0, 0]}><meshStandardMaterial color="white" /></Sphere>
+            <Sphere args={[0.08]} position={[0.2, 0.05, 0.1]}><meshStandardMaterial color="black" /></Sphere>
+          </group>
+
+          {/* Front Legs leaning forward */}
+          <Cylinder args={[0.05, 0.05, 0.5]} position={[-0.3, 0.15, 0.4]} rotation={[0.4, 0, -0.2]}><meshStandardMaterial color="#4CAF50" /></Cylinder>
+          <Cylinder args={[0.05, 0.05, 0.5]} position={[0.3, 0.15, 0.4]} rotation={[0.4, 0, 0.2]}><meshStandardMaterial color="#4CAF50" /></Cylinder>
+          
+          {/* Big Jumping Legs */}
+          <Cylinder args={[0.12, 0.08, 0.7]} position={[-0.4, 0.25, -0.3]} rotation={[0.2, 0.2, -0.6]}><meshStandardMaterial color="#388E3C" /></Cylinder>
+          <Cylinder args={[0.12, 0.08, 0.7]} position={[0.4, 0.25, -0.3]} rotation={[0.2, -0.2, 0.6]}><meshStandardMaterial color="#388E3C" /></Cylinder>
+        </group>
+      )
+    case 'locust':
+      return (
+        <group scale={[0.5, 0.5, 0.5]}>
+          {/* Segmented Thorax and Abdomen */}
+          <Box args={[0.4, 0.4, 1.0]} position={[0, 0.3, 0]}><meshStandardMaterial color="#8B4513" /></Box>
+          <Box args={[0.3, 0.3, 1.2]} position={[0, 0.25, -0.7]}><meshStandardMaterial color="#A0522D" /></Box>
+
+          {/* Head + Compound Eyes */}
+          <group position={[0, 0.3, 0.65]}>
+            <Box args={[0.35, 0.35, 0.35]}><meshStandardMaterial color="#5C4033" /></Box>
+            <Sphere args={[0.1]} position={[-0.15, 0.1, 0.1]}><meshStandardMaterial color="#FFD700" /></Sphere>
+            <Sphere args={[0.1]} position={[0.15, 0.1, 0.1]}><meshStandardMaterial color="#FFD700" /></Sphere>
+          </group>
+
+          {/* Huge anged translucent wings */}
+          <Box args={[0.25, 0.02, 1.6]} position={[-0.2, 0.5, -0.2]} rotation={[0.15, 0.3, 0.1]}><meshStandardMaterial color="#F5DEB3" opacity={0.65} transparent /></Box>
+          <Box args={[0.25, 0.02, 1.6]} position={[0.2, 0.5, -0.2]} rotation={[0.15, -0.3, -0.1]}><meshStandardMaterial color="#F5DEB3" opacity={0.65} transparent /></Box>
+
+          {/* Long segmented antennae */}
+          <Cylinder args={[0.015, 0.015, 0.8]} position={[-0.1, 0.5, 0.8]} rotation={[1.0, 0.4, 0]}><meshStandardMaterial color="#2F4F4F" /></Cylinder>
+          <Cylinder args={[0.015, 0.015, 0.8]} position={[0.1, 0.5, 0.8]} rotation={[1.0, -0.4, 0]}><meshStandardMaterial color="#2F4F4F" /></Cylinder>
+        </group>
+      )
     default:
       return <Box position={[0, 0.5, 0]}><meshStandardMaterial color="magenta" /></Box>
   }
@@ -581,7 +628,7 @@ export const Furniture = ({ item, textures }: { item: FurnitureItem, textures: a
 
   const isSearched = foundLocations[item.id]
   const hasPiece = hiddenPieces[item.id]
-  const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug'
+  const isSearchable = item.type !== 'safe' && item.type !== 'dumbbell' && item.type !== 'monitor' && item.type !== 'rug' && item.type !== 'frog' && item.type !== 'locust'
   // Use global hovered state
   const hoveredId = useGameStore(state => state.hoveredId)
   const hovered = hoveredId === item.id

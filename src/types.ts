@@ -10,7 +10,7 @@ export interface RoomData {
 
 export interface FurnitureItem {
   id: string
-  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture' | 'painting' | 'arcade_game' | 'pool_table' | 'vending_machine' | 'cinema_screen' | 'bimah' | 'lab_bench' | 'microscope' | 'whiteboard' | 'crib' | 'toy_chest' | 'changing_table' | 'bar_counter' | 'stool' | 'jukebox' | 'telescope' | 'sauna_bench' | 'heater' | 'wine_rack' | 'barrel' | 'workbench' | 'drill_press' | 'saw' | 'menorah' | 'seder_plate' | 'mikvah_pool' | 'open_book' | 'torah_scroll' | 'chandelier' | 'fish_tank' | 'trophy_case' | 'baker_rack' | 'oven_industrial'
+  type: 'tv' | 'fireplace' | 'toilet' | 'safe' | 'bookshelf' | 'plant' | 'couch' | 'table' | 'chair' | 'bed' | 'lamp' | 'fridge' | 'cabinet' | 'desk' | 'monitor' | 'dumbbell' | 'treadmill' | 'piano' | 'bench' | 'tool_chest' | 'washer' | 'dryer' | 'server_rack' | 'easel' | 'drum_kit' | 'rug' | 'sculpture' | 'painting' | 'arcade_game' | 'pool_table' | 'vending_machine' | 'cinema_screen' | 'bimah' | 'lab_bench' | 'microscope' | 'whiteboard' | 'crib' | 'toy_chest' | 'changing_table' | 'bar_counter' | 'stool' | 'jukebox' | 'telescope' | 'sauna_bench' | 'heater' | 'wine_rack' | 'barrel' | 'workbench' | 'drill_press' | 'saw' | 'menorah' | 'seder_plate' | 'mikvah_pool' | 'open_book' | 'torah_scroll' | 'chandelier' | 'fish_tank' | 'trophy_case' | 'baker_rack' | 'oven_industrial' | 'frog' | 'locust'
   position: [number, number, number]
   rotation: [number, number, number]
   color?: string

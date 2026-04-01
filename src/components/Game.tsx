@@ -3,6 +3,7 @@ import { House } from './World/House'
 import { Player } from './Player/Player'
 import { Sky } from '@react-three/drei'
 import { ConfettiRain } from './FX/Confetti'
+import { PlagueRain } from './FX/PlagueRain'
 import { useGameStore } from '../store/gameStore'
 import * as THREE from 'three'
 
@@ -68,8 +69,9 @@ export const Game = () => {
 
       <Player />
       <House />
+      <PlagueRain />
 
-      {/* Trigger Confetti on finding piece - simplified for now: random bursts or none 
+      {/* Trigger Confetti on finding piece - simplified for none 
           Implementing proper trigger needs state of "just found".
           For now simple ambient particles or just skip to save complexity/time?
           User asked for it.
