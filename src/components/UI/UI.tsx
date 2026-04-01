@@ -15,8 +15,8 @@ export const UI = () => {
   const setJoystickInput = useGameStore(state => state.setJoystickInput)
 
   const [enteredCode, setEnteredCode] = useState('')
-  const [size, setSize] = useState(5)
-  const [piecesCount, setPiecesCount] = useState(5)
+  const [size, setSize] = useState(2)
+  const [piecesCount, setPiecesCount] = useState(10)
   const [showHelp, setShowHelp] = useState(false)
 
   const notification = useGameStore(state => state.notification)
@@ -142,9 +142,10 @@ export const UI = () => {
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', minHeight: '100%', padding: '20px'
           }}>
-          <h1>Passover Puzzle: Mansion Edition</h1>
-          <p>Use WASD or Joystick to move. Click to search furniture.</p>
-          <p>Find all the afikoman pieces to get the safe code.</p>
+          <h1 style={{ color: 'gold', textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>Passover Puzzle: Mansion Edition</h1>
+          <p style={{ fontSize: '18px', color: '#ffdddd' }}>🚨 <strong>Emergency!</strong> The Afikomen has been stolen and locked away in a high-tech safe!</p>
+          <p style={{ fontSize: '18px', color: '#ddffdd' }}>It's up to you to explore this sprawling mansion, find all the hidden pieces of the puzzle, and crack the safe before the Seder night slips away!</p>
+          <p style={{ fontSize: '14px', fontStyle: 'italic', color: '#aaa' }}>Use WASD or the Joystick to move, and center your view on furniture to search.</p>
 
           {/* Resume Button */}
           {useGameStore.getState().rooms.length > 0 && (
@@ -201,7 +202,7 @@ export const UI = () => {
                 <p><strong>Move:</strong> Left Joystick or WASD.</p>
                 <p><strong>Look:</strong> Swipe Screen or Mouse.</p>
                 <p><strong>Interact:</strong> Center view on object & Tap/Click.</p>
-                <p><strong>Goal:</strong> Find 5 pieces to get the Safe Code.</p>
+                <p><strong>Goal:</strong> Find {useGameStore.getState().rooms.length > 0 ? totalPuzzlePieces : piecesCount} pieces to get the Safe Code.</p>
               </div>
               <button onClick={() => setShowHelp(false)} style={{ marginTop: '15px', padding: '8px 16px', fontSize: '16px' }}>Got it!</button>
             </div>
@@ -272,7 +273,7 @@ export const UI = () => {
                 <p><strong>Move:</strong> Left Joystick (Mobile) or WASD (Desktop).</p>
                 <p><strong>Look:</strong> Swipe Screen (Mobile) or Mouse.</p>
                 <p><strong>Interact:</strong> Center your view on an object (look for the Ring) and <strong>Tap/Click anywhere</strong> to search.</p>
-                <p><strong>Goal:</strong> Find 5 Hidden Pieces in furniture to reveal the Secret Code.</p>
+                <p><strong>Goal:</strong> Find {totalPuzzlePieces} Hidden Pieces in furniture to reveal the Secret Code.</p>
                 <p><strong>Win:</strong> Enter the code at the Safe.</p>
               </div>
               <button onClick={() => setShowHelp(false)} style={{ marginTop: '15px', padding: '8px 16px', fontSize: '16px' }}>Got it!</button>

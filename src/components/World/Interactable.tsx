@@ -23,7 +23,6 @@ export const Interactable = ({ onClick, children }: InteractableProps) => {
     >
       {/* Optional Highlight Effect can be added here or via children materials */}
       {children}
-      {children}
     </group>
   )
 }

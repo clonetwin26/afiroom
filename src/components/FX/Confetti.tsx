@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Instance, Instances } from '@react-three/drei'
 import * as THREE from 'three'
@@ -64,10 +64,44 @@ export const ConfettiRain = ({ count = 100 }: { count?: number }) => {
     ] as [number, number, number]
   }))
 
+  const moneyTexture = useMemo(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 64
+    canvas.height = 128
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    // Bill Green
+    ctx.fillStyle = '#85bb65'
+    ctx.fillRect(0, 0, 64, 128)
+
+    // Border
+    ctx.strokeStyle = '#2d5a27'
+    ctx.lineWidth = 4
+    ctx.strokeRect(2, 2, 60, 124)
+
+    // Oval Center
+    ctx.fillStyle = '#2d5a27'
+    ctx.beginPath()
+    ctx.ellipse(32, 64, 25, 15, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    // $ Symbol
+    ctx.fillStyle = '#85bb65'
+    ctx.font = 'bold 24px Arial'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('$', 32, 64)
+
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.colorSpace = THREE.SRGBColorSpace
+    return tex
+  }, [])
+
   return (
     <Instances range={count}>
-      <planeGeometry args={[0.1, 0.2]} />
-      <meshBasicMaterial side={THREE.DoubleSide} />
+      <planeGeometry args={[0.2, 0.4]} />
+      <meshBasicMaterial side={THREE.DoubleSide} map={moneyTexture} transparent />
       {particles.map((data, i) => (
         <RainParticle key={i} {...data} />
       ))}
@@ -75,7 +109,7 @@ export const ConfettiRain = ({ count = 100 }: { count?: number }) => {
   )
 }
 
-const RainParticle = ({ velocity, color, initialPos }: any) => {
+const RainParticle = ({ velocity, initialPos }: any) => {
   const ref = useRef<any>(null)
   const pos = useRef(new THREE.Vector3(...initialPos))
 
@@ -95,5 +129,5 @@ const RainParticle = ({ velocity, color, initialPos }: any) => {
     ref.current.position.copy(pos.current)
   })
 
-  return <Instance ref={ref} color={color} position={initialPos} />
+  return <Instance ref={ref} position={initialPos} />
 }

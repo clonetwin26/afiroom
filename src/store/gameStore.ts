@@ -10,10 +10,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   notification: null,
   secretCode: '1234',
   puzzlePiecesFound: 0,
-  totalPuzzlePieces: 5,
-  targetPuzzlePieces: 5, // Configured target
+  totalPuzzlePieces: 10,
+  targetPuzzlePieces: 10, // Configured target
   hasKey: false,
-  gridSize: 5,
+  gridSize: 2,
   isMusicEnabled: true, // Default ON
   isGyroEnabled: false, // Default OFF (Requires permission)
   timeOfDay: 'night', // Default Night
