@@ -201,19 +201,19 @@ export const PlagueRain = () => {
   return (
     <group>
       {/* Frogs */}
-      <instancedMesh ref={meshRefFrog} args={[null!, null!, COUNT / 2]}>
+      <instancedMesh ref={meshRefFrog} args={[null!, null!, 50]} frustumCulled={false}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial side={THREE.DoubleSide} map={frogTex} transparent={true} />
       </instancedMesh>
 
       {/* Locusts */}
-      <instancedMesh ref={meshRefLocust} args={[null!, null!, 50]}>
+      <instancedMesh ref={meshRefLocust} args={[null!, null!, 50]} frustumCulled={false}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial side={THREE.DoubleSide} map={locustTex} transparent={true} />
       </instancedMesh>
 
       {/* Blood Streaks */}
-      <instancedMesh ref={meshRefBlood} args={[null!, null!, 100]}>
+      <instancedMesh ref={meshRefBlood} args={[null!, null!, 100]} frustumCulled={false}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial side={THREE.DoubleSide} color="#B22222" transparent opacity={0.8} />
       </instancedMesh>
